@@ -1,0 +1,14 @@
+syntax = "proto3";
+option go_package = "protos/micro_stock_price";
+
+service TaiwanPrice {
+  rpc DailyPrice (DailyPriceRequest) returns (DailyPriceResponse) {}
+}
+
+message DailyPriceRequest {
+  string StockCode = 1; // 股票代碼
+}
+
+message DailyPriceResponse {
+  string StockCode = 1; // 股票代碼
+}

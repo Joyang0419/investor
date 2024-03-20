@@ -1,6 +1,6 @@
 package main
 
-import "apiserver/cmd"
+import "gateway/cmd"
 
 func main() {
 	cmd.Execute()

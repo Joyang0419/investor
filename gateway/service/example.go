@@ -1,7 +1,7 @@
 package service
 
 import (
-	"apiserver/handler"
+	"gateway/handler"
 )
 
 type ExampleService struct {

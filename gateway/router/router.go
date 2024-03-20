@@ -1,7 +1,7 @@
 package router
 
 import (
-	"apiserver/handler"
+	"gateway/handler"
 
 	"github.com/gin-gonic/gin"
 )

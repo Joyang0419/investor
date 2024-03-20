@@ -3,9 +3,9 @@ package cmd
 import (
 	"log"
 
-	"apiserver/handler"
-	"apiserver/router"
-	"apiserver/service"
+	"gateway/handler"
+	"gateway/router"
+	"gateway/service"
 
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/cobra"

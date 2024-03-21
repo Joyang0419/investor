@@ -4,6 +4,8 @@ import (
 	"gateway/handler"
 )
 
+// todo 這邊還是需要service 層 因為之後是GraphQL, 要在這邊組裝response
+
 type ExampleService struct {
 }
 

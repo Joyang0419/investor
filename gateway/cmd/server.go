@@ -13,9 +13,22 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func runGateway(_ *cobra.Command, _ []string) {
+var serverCmd = &cobra.Command{
+	Use:   "server",
+	Short: "",
+	Long:  "",
+	Run:   runServerCmd,
+}
+
+func init() {
+	rootCmd.AddCommand(serverCmd)
+}
+
+func runServerCmd(_ *cobra.Command, _ []string) {
 	// 設定Infra 連線 && 可以用makefile中: UpDevInfra 建置
 	// todo 缺少一個 mongoDB init.db .js 自動建置 investor database
+
+	// todo 這只是一個範例，基本上，這邊不會有db連線，全部應該是 grpc Client
 	mysqlDbConn, err := infra_conn.SetupMySQL(infra_conn.MySQLCfg{
 		Host:            "localhost",
 		Port:            "3306",
@@ -27,7 +40,7 @@ func runGateway(_ *cobra.Command, _ []string) {
 		ConnMaxLifeTime: 15 * time.Minute,
 	}, nil) // todo logger logru
 	if err != nil {
-		log.Fatalf("[runGateway]infra_conn.SetupMySQL err: %v", err)
+		log.Fatalf("[runServerCmd]infra_conn.SetupMySQL err: %v", err)
 	}
 
 	mongoDBConn, err := infra_conn.SetupMongoDB(infra_conn.MongoDBCfg{
@@ -53,19 +66,7 @@ func runGateway(_ *cobra.Command, _ []string) {
 	// 啟動服務
 	// todo viper 環境變數 :8080
 	if err = r.Run(":8080"); err != nil {
-		log.Fatalf("[runGateway] route.Run err: %v", err)
+		log.Fatalf("[runServerCmd] route.Run err: %v", err)
 	}
-	log.Print("[runGateway]success on port: 8080")
-
-}
-
-var gatewayCmd = &cobra.Command{
-	Use:   "gateway",
-	Short: "gateway short description",
-	Long:  "gateway long description",
-	Run:   runGateway,
-}
-
-func init() {
-	rootCmd.AddCommand(gatewayCmd)
+	log.Print("[runServerCmd]success on port: 8080")
 }

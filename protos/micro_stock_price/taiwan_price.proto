@@ -1,14 +1,30 @@
 syntax = "proto3";
 option go_package = "protos/micro_stock_price";
 
+import "google/protobuf/timestamp.proto";
+
 service TaiwanPrice {
-  rpc DailyPrice (DailyPriceRequest) returns (DailyPriceResponse) {}
+  // 獲取每日價格
+  rpc GetDailyPrices (DailyPricesRequest) returns (DailyPricesResponse);
+  // 抓取每日價格(爬蟲)
+  rpc CrawlDailyPrices(DailyPricesRequest)  returns (DailyPricesResponse);
 }
 
-message DailyPriceRequest {
+message DailyPricesRequest {
   string StockCode = 1; // 股票代碼
+  google.protobuf.Timestamp StartTimestamp = 2; // 開始時間點
+  google.protobuf.Timestamp EndTimestamp = 3; // 結束時間點
 }
 
-message DailyPriceResponse {
+message DailyPricesResponse {
+  repeated DailyPrice DailyPrices = 1;
+}
+
+message DailyPrice {
   string StockCode = 1; // 股票代碼
+  double HighestPrice = 2; // 最高價
+  double LowestPrice = 3; // 最低價
+  double OpeningPrice = 4; // 開盤價
+  double ClosingPrice = 5; // 收盤價
+  google.protobuf.Timestamp DateTimestamp = 6; // 資料歸屬時間點(正常來說是日期)
 }

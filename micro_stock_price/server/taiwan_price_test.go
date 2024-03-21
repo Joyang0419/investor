@@ -16,7 +16,7 @@ func TestCrawlTWSEDailyPrices(t *testing.T) {
 	}
 	prices, err := CrawlTWSEDailyPrices(
 		"2330",
-		time.Date(2023, time.January, 1, 0, 0, 0, 0, location),
+		time.Date(time.Now().Year(), time.Now().Month()-1, time.Now().Day(), 0, 0, 0, 0, location),
 	)
 
 	assert.NotEmpty(t, prices)

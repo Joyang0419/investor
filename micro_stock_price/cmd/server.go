@@ -4,11 +4,11 @@ import (
 	"log"
 	"net"
 
-	"google.golang.org/grpc"
 	"micro_stock_price/server"
 	"protos/micro_stock_price"
 
 	"github.com/spf13/cobra"
+	"google.golang.org/grpc"
 )
 
 var serverCmd = &cobra.Command{

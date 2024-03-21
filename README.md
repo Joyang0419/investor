@@ -1,5 +1,8 @@
 - makefile
 ```
+# 安裝GRPC套件
+make InstallGRPCPlugins
+
 # 產生protos.pb.go
 make GenProtos
 

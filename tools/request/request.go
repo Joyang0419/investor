@@ -13,6 +13,10 @@ var client = &http.Client{}
 
 func HttpRequest[T any](url, method string, headers map[string]string, allowedHttpStatusCodes ...int) (response T, err error) {
 	// 创建一个 HTTP 请求
+	if len(allowedHttpStatusCodes) == 0 {
+		allowedHttpStatusCodes = []int{http.StatusOK}
+	}
+
 	req, err := http.NewRequest(method, url, nil)
 	if err != nil {
 		return response, fmt.Errorf("[HttpRequest]http.NewRequest err: %w", err)

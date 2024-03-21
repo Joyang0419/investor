@@ -26,5 +26,7 @@ message DailyPrice {
   double LowestPrice = 3; // 最低價
   double OpeningPrice = 4; // 開盤價
   double ClosingPrice = 5; // 收盤價
-  google.protobuf.Timestamp DateTimestamp = 6; // 資料歸屬時間點(正常來說是日期)
+  int64 Volume = 6; // 成交股數
+  double Change = 7;// 漲跌價差
+  int64 DateTimestamp = 8; // 資料歸屬時間點(正常來說是日期)
 }

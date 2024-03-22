@@ -25,11 +25,9 @@ func init() {
 }
 
 func runServerCmd(_ *cobra.Command, _ []string) {
-	// 設定Infra 連線 && 可以用makefile中: UpDevInfra 建置
 	// todo viper db 設定
 	// todo 缺少一個 mongoDB init.db .js 自動建置 investor database
 	// todo 這只是一個範例，基本上，這邊不會有db連線，全部應該是 grpc Client
-	// todo logger logru
 	mysqlDbConn, err := infra_conn.SetupMySQL(infra_conn.MySQLCfg{
 		Host:            "localhost",
 		Port:            "3306",
@@ -63,7 +61,6 @@ func runServerCmd(_ *cobra.Command, _ []string) {
 	// 準備好實作的service
 	exampleService := service.NewExampleService()
 
-	// todo logger 使用 logru
 	r := router.NewGinRouter(router.NewHandlers(
 		handler.NewExampleHandler(exampleService),
 	), gin.Logger())

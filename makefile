@@ -11,11 +11,11 @@ GenProtos:
 
 # 啟動Gateway服務
 RunGateway:
-	cd gateway && go run main.go server
+	cd gateway && go mod tidy && go run main.go server
 
 # 啟動micro_stock_price
 RunMicroStockPrice:
-	cd micro_stock_price && go run main.go server
+	cd micro_stock_price && go mod tidy && go run main.go server
 
 # 啟動dev/build檔的dev docker compose yaml
 UpDevInfra:

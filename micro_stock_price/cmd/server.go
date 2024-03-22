@@ -4,11 +4,12 @@ import (
 	"log"
 	"net"
 
+	"google.golang.org/grpc"
 	"micro_stock_price/server"
 	"protos/micro_stock_price"
+	"tools/logger"
 
 	"github.com/spf13/cobra"
-	"google.golang.org/grpc"
 )
 
 var serverCmd = &cobra.Command{
@@ -32,7 +33,7 @@ func runServerCmd(_ *cobra.Command, _ []string) {
 	// 註冊服務
 	micro_stock_price.RegisterTaiwanPriceServer(s, server.NewTaiwanPriceServer())
 
-	log.Printf("gRPC server listening at %v", lis.Addr())
+	logger.Info("gRPC server listening at %v", lis.Addr())
 	if err = s.Serve(lis); err != nil {
 		log.Fatalf("s.Serve err: %v", err)
 	}

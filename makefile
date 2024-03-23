@@ -27,3 +27,6 @@ DownDevInfra:
 
 GenGraphQL:
 	cd apiserver && go run github.com/99designs/gqlgen generate
+
+MigrateUp:
+	cd build/dev && docker-compose up -d flyway

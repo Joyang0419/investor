@@ -9,9 +9,9 @@ InstallGRPCPlugins:
 GenProtos:
 	protoc --go_out=. --go-grpc_out=. ./protos/*/*.proto
 
-# 啟動Gateway服務
-RunGateway:
-	cd gateway && go mod tidy && go run main.go server
+# 啟動ApiServer服務
+RunApiServer:
+	cd apiserver && go mod tidy && go run main.go server
 
 # 啟動micro_stock_price
 RunMicroStockPrice:

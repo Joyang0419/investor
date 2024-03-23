@@ -1,20 +1,35 @@
 - makefile
 ```
 # 安裝GRPC套件
-make InstallGRPCPlugins
+InstallGRPCPlugins:
+	go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.28
+	go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.2
 
-# 產生protos.pb.go
-make GenProtos
-
-# 啟動Gateway服務
-make RunGateway
+	export PATH="$${PATH}:$$(go env GOPATH)/bin"
 
 # 讓protos產生pb.go
-make GenProtos
+GenProtos:
+	protoc --go_out=. --go-grpc_out=. ./protos/*/*.proto
+
+# 啟動ApiServer服務
+RunApiServer:
+	cd apiserver && go mod tidy && go run main.go server
+
+# 啟動micro_stock_price
+RunMicroStockPrice:
+	cd micro_stock_price && go mod tidy && go run main.go server
 
 # 啟動dev/build檔的dev docker compose yaml
-make UpDevInfra
+UpDevInfra:
+	cd build/dev && docker-compose up -d
 
 # 關閉dev/build檔的dev docker compose yaml
-make DownDevInfra
+DownDevInfra:
+	cd build/dev && docker-compose down -v
+
+GenGraphQL:
+	cd apiserver && go run github.com/99designs/gqlgen generate
+
+MigrateUp:
+	cd build/dev && docker-compose up -d flyway
 ```

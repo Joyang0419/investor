@@ -4,7 +4,7 @@ import (
 	"log"
 	"time"
 
-	"apiserver/graphql"
+	graphql "apiserver/graphql/resolver"
 	"apiserver/router"
 	"tools/infra_conn"
 	"tools/logger"
@@ -60,12 +60,8 @@ func runServerCmd(_ *cobra.Command, _ []string) {
 
 	_, _ = mysqlDbConn, mongoDBConn
 
-	r := router.NewGinRouter(
-		graphql.NewResolver(
-			graphql.NewQueryResolver(),
-			graphql.NewMutationResolver(),
-		), logger.GinLogger(),
-	)
+	r := router.NewGinRouter(graphql.NewResolver(graphql.NewQueryResolver(), graphql.NewMutationResolver()), logger.GinLogger())
+
 	// 啟動服務
 	// todo viper 環境變數 :8080
 	if err = r.Run(":8080"); err != nil {

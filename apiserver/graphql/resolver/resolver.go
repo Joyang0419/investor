@@ -17,14 +17,6 @@ func NewResolver(queryResolver graphql.QueryResolver, mutationResolver graphql.M
 	return &Resolver{QueryResolver: queryResolver, MutationResolver: mutationResolver}
 }
 
-func (r *Resolver) Mutation() graphql.MutationResolver {
-	return r.MutationResolver
-}
-
-func (r *Resolver) Query() graphql.QueryResolver {
-	return r.QueryResolver
-}
-
 func NewQueryResolver() graphql.QueryResolver {
 	return new(queryResolver)
 }
@@ -32,6 +24,3 @@ func NewQueryResolver() graphql.QueryResolver {
 func NewMutationResolver() graphql.MutationResolver {
 	return new(mutationResolver)
 }
-
-type mutationResolver struct{ *Resolver }
-type queryResolver struct{ *Resolver }

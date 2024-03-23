@@ -1,4 +1,0 @@
-type Order {
-    orderID: ID!
-    amount: Float!
-}

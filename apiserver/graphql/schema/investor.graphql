@@ -4,7 +4,7 @@ type Investor {
     orders: [Order!]!
 }
 
-type QueryInvestor {
+extend type Query {
     investors: [Investor!]!
 }
 
@@ -12,8 +12,7 @@ input createInvestorInput {
     name: String!
 }
 
-
-type MutationInvestor {
+extend type Mutation {
     createInvestor(input: createInvestorInput!): Investor!
 }
 

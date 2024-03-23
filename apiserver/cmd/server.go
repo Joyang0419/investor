@@ -4,12 +4,11 @@ import (
 	"log"
 	"time"
 
-	"apiserver/handler"
+	"apiserver/graphql"
 	"apiserver/router"
-	"apiserver/service"
 	"tools/infra_conn"
+	"tools/logger"
 
-	"github.com/gin-gonic/gin"
 	"github.com/spf13/cobra"
 )
 
@@ -31,7 +30,6 @@ func runServerCmd(_ *cobra.Command, _ []string) {
 	// todo viper db 設定
 	// todo 缺少一個 mongoDB init.db .js 自動建置 investor database
 	// todo 這只是一個範例，基本上，這邊不會有db連線，全部應該是 grpc Client
-	// todo logger logru
 	mysqlDbConn, err := infra_conn.SetupMySQL(infra_conn.MySQLCfg{
 		Host:            "localhost",
 		Port:            "3306",
@@ -62,14 +60,12 @@ func runServerCmd(_ *cobra.Command, _ []string) {
 
 	_, _ = mysqlDbConn, mongoDBConn
 
-	// 準備好實作的service
-	exampleService := service.NewExampleService()
-
-	// todo logger 使用 logru
-	r := router.NewGinRouter(router.NewHandlers(
-		handler.NewExampleHandler(exampleService),
-	), gin.Logger())
-
+	r := router.NewGinRouter(
+		graphql.NewResolver(
+			graphql.NewQueryResolver(),
+			graphql.NewMutationResolver(),
+		), logger.GinLogger(),
+	)
 	// 啟動服務
 	// todo viper 環境變數 :8080
 	if err = r.Run(":8080"); err != nil {

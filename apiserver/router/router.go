@@ -1,30 +1,38 @@
 package router
 
 import (
-	"apiserver/handler"
+	"apiserver/graphql"
 
+	"github.com/99designs/gqlgen/graphql/handler"
+	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/gin-gonic/gin"
 )
 
-type Handlers struct {
-	ExampleHandler handler.ExampleHandler
+func graphqlHandler(resolver graphql.ResolverRoot) gin.HandlerFunc {
+	h := handler.NewDefaultServer(graphql.NewExecutableSchema(graphql.Config{Resolvers: resolver}))
+
+	return func(c *gin.Context) {
+		h.ServeHTTP(c.Writer, c.Request)
+	}
 }
 
-func NewHandlers(exampleHandler handler.ExampleHandler) Handlers {
-	return Handlers{ExampleHandler: exampleHandler}
+func playgroundHandler() gin.HandlerFunc {
+	h := playground.Handler("GraphQL", "/query")
+
+	return func(c *gin.Context) {
+		h.ServeHTTP(c.Writer, c.Request)
+	}
 }
 
-func NewGinRouter(handlers Handlers, middlewares ...gin.HandlerFunc) *gin.Engine {
+func NewGinRouter(resolver graphql.ResolverRoot, middlewares ...gin.HandlerFunc) *gin.Engine {
 	router := gin.New()
 
 	for idx := range middlewares {
 		router.Use(middlewares[idx])
 	}
 
-	v1 := router.Group("/v1")
-	{
-		v1.GET("/helloworld", handlers.ExampleHandler.HelloWorld())
-	}
+	router.POST("/query", graphqlHandler(resolver))
+	router.GET("/", playgroundHandler())
 
 	return router
 }

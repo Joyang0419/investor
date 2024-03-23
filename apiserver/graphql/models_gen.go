@@ -8,22 +8,23 @@ type Investor struct {
 	Orders     []*Order `json:"orders"`
 }
 
-type MutationInvestor struct {
-	CreateInvestor *Investor `json:"createInvestor"`
+type Mutation struct {
 }
 
 type Order struct {
-	OrderID string  `json:"orderID"`
-	Amount  float64 `json:"amount"`
+	OrderID    string  `json:"orderID"`
+	InvestorID string  `json:"investorID"`
+	Amount     float64 `json:"amount"`
 }
 
 type Query struct {
 }
 
-type QueryInvestor struct {
-	Investors []*Investor `json:"investors"`
-}
-
 type CreateInvestorInput struct {
 	Name string `json:"name"`
+}
+
+type CreateOrderInput struct {
+	InvestorID string  `json:"investorID"`
+	Amount     float64 `json:"amount"`
 }

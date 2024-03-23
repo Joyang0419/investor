@@ -1,0 +1,19 @@
+type Investor {
+    investorID: ID!
+    name: String!
+    orders: [Order!]!
+}
+
+type QueryInvestor {
+    investors: [Investor!]!
+}
+
+input createInvestorInput {
+    name: String!
+}
+
+
+type MutationInvestor {
+    createInvestor(input: createInvestorInput!): Investor!
+}
+

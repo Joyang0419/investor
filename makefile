@@ -24,3 +24,6 @@ UpDevInfra:
 # 關閉dev/build檔的dev docker compose yaml
 DownDevInfra:
 	cd build/dev && docker-compose down -v
+
+GenGraphQL:
+	cd apiserver && go run github.com/99designs/gqlgen generate

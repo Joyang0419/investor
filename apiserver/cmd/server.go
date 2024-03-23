@@ -24,6 +24,8 @@ func init() {
 	rootCmd.AddCommand(serverCmd)
 }
 
+// todo: graceful shutdown: https://learnku.com/docs/gin-gonic/1.5/examples-graceful-restart-or-stop/6173
+
 func runServerCmd(_ *cobra.Command, _ []string) {
 	// 設定Infra 連線 && 可以用makefile中: UpDevInfra 建置
 	// todo viper db 設定

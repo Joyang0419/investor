@@ -3,6 +3,7 @@
 package graphql
 
 import (
+	"apiserver/graphql/model"
 	"bytes"
 	"context"
 	"embed"
@@ -53,8 +54,8 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		CreateInvestor func(childComplexity int, input CreateInvestorInput) int
-		CreateOrder    func(childComplexity int, input CreateOrderInput) int
+		CreateInvestor func(childComplexity int, input model.CreateInvestorInput) int
+		CreateOrder    func(childComplexity int, input model.CreateOrderInput) int
 	}
 
 	Order struct {
@@ -70,12 +71,12 @@ type ComplexityRoot struct {
 }
 
 type MutationResolver interface {
-	CreateInvestor(ctx context.Context, input CreateInvestorInput) (*Investor, error)
-	CreateOrder(ctx context.Context, input CreateOrderInput) (*Order, error)
+	CreateInvestor(ctx context.Context, input model.CreateInvestorInput) (*model.Investor, error)
+	CreateOrder(ctx context.Context, input model.CreateOrderInput) (*model.Order, error)
 }
 type QueryResolver interface {
-	Investors(ctx context.Context) ([]*Investor, error)
-	Orders(ctx context.Context) ([]*Order, error)
+	Investors(ctx context.Context) ([]*model.Investor, error)
+	Orders(ctx context.Context) ([]*model.Order, error)
 }
 
 type executableSchema struct {
@@ -128,7 +129,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreateInvestor(childComplexity, args["input"].(CreateInvestorInput)), true
+		return e.complexity.Mutation.CreateInvestor(childComplexity, args["input"].(model.CreateInvestorInput)), true
 
 	case "Mutation.createOrder":
 		if e.complexity.Mutation.CreateOrder == nil {
@@ -140,7 +141,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreateOrder(childComplexity, args["input"].(CreateOrderInput)), true
+		return e.complexity.Mutation.CreateOrder(childComplexity, args["input"].(model.CreateOrderInput)), true
 
 	case "Order.amount":
 		if e.complexity.Order.Amount == nil {
@@ -307,10 +308,10 @@ var parsedSchema = gqlparser.MustLoadSchema(sources...)
 func (ec *executionContext) field_Mutation_createInvestor_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 CreateInvestorInput
+	var arg0 model.CreateInvestorInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNcreateInvestorInput2apiserverᚋgraphqlᚐCreateInvestorInput(ctx, tmp)
+		arg0, err = ec.unmarshalNcreateInvestorInput2apiserverᚋgraphqlᚋmodelᚐCreateInvestorInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -322,10 +323,10 @@ func (ec *executionContext) field_Mutation_createInvestor_args(ctx context.Conte
 func (ec *executionContext) field_Mutation_createOrder_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 CreateOrderInput
+	var arg0 model.CreateOrderInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNcreateOrderInput2apiserverᚋgraphqlᚐCreateOrderInput(ctx, tmp)
+		arg0, err = ec.unmarshalNcreateOrderInput2apiserverᚋgraphqlᚋmodelᚐCreateOrderInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -387,7 +388,7 @@ func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArg
 
 // region    **************************** field.gotpl *****************************
 
-func (ec *executionContext) _Investor_investorID(ctx context.Context, field graphql.CollectedField, obj *Investor) (ret graphql.Marshaler) {
+func (ec *executionContext) _Investor_investorID(ctx context.Context, field graphql.CollectedField, obj *model.Investor) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Investor_investorID(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -431,7 +432,7 @@ func (ec *executionContext) fieldContext_Investor_investorID(ctx context.Context
 	return fc, nil
 }
 
-func (ec *executionContext) _Investor_name(ctx context.Context, field graphql.CollectedField, obj *Investor) (ret graphql.Marshaler) {
+func (ec *executionContext) _Investor_name(ctx context.Context, field graphql.CollectedField, obj *model.Investor) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Investor_name(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -475,7 +476,7 @@ func (ec *executionContext) fieldContext_Investor_name(ctx context.Context, fiel
 	return fc, nil
 }
 
-func (ec *executionContext) _Investor_orders(ctx context.Context, field graphql.CollectedField, obj *Investor) (ret graphql.Marshaler) {
+func (ec *executionContext) _Investor_orders(ctx context.Context, field graphql.CollectedField, obj *model.Investor) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Investor_orders(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -501,9 +502,9 @@ func (ec *executionContext) _Investor_orders(ctx context.Context, field graphql.
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*Order)
+	res := resTmp.([]*model.Order)
 	fc.Result = res
-	return ec.marshalNOrder2ᚕᚖapiserverᚋgraphqlᚐOrderᚄ(ctx, field.Selections, res)
+	return ec.marshalNOrder2ᚕᚖapiserverᚋgraphqlᚋmodelᚐOrderᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Investor_orders(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -541,7 +542,7 @@ func (ec *executionContext) _Mutation_createInvestor(ctx context.Context, field 
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreateInvestor(rctx, fc.Args["input"].(CreateInvestorInput))
+		return ec.resolvers.Mutation().CreateInvestor(rctx, fc.Args["input"].(model.CreateInvestorInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -553,9 +554,9 @@ func (ec *executionContext) _Mutation_createInvestor(ctx context.Context, field 
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*Investor)
+	res := resTmp.(*model.Investor)
 	fc.Result = res
-	return ec.marshalNInvestor2ᚖapiserverᚋgraphqlᚐInvestor(ctx, field.Selections, res)
+	return ec.marshalNInvestor2ᚖapiserverᚋgraphqlᚋmodelᚐInvestor(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_createInvestor(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -604,7 +605,7 @@ func (ec *executionContext) _Mutation_createOrder(ctx context.Context, field gra
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreateOrder(rctx, fc.Args["input"].(CreateOrderInput))
+		return ec.resolvers.Mutation().CreateOrder(rctx, fc.Args["input"].(model.CreateOrderInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -616,9 +617,9 @@ func (ec *executionContext) _Mutation_createOrder(ctx context.Context, field gra
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*Order)
+	res := resTmp.(*model.Order)
 	fc.Result = res
-	return ec.marshalNOrder2ᚖapiserverᚋgraphqlᚐOrder(ctx, field.Selections, res)
+	return ec.marshalNOrder2ᚖapiserverᚋgraphqlᚋmodelᚐOrder(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_createOrder(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -653,7 +654,7 @@ func (ec *executionContext) fieldContext_Mutation_createOrder(ctx context.Contex
 	return fc, nil
 }
 
-func (ec *executionContext) _Order_orderID(ctx context.Context, field graphql.CollectedField, obj *Order) (ret graphql.Marshaler) {
+func (ec *executionContext) _Order_orderID(ctx context.Context, field graphql.CollectedField, obj *model.Order) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Order_orderID(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -697,7 +698,7 @@ func (ec *executionContext) fieldContext_Order_orderID(ctx context.Context, fiel
 	return fc, nil
 }
 
-func (ec *executionContext) _Order_investorID(ctx context.Context, field graphql.CollectedField, obj *Order) (ret graphql.Marshaler) {
+func (ec *executionContext) _Order_investorID(ctx context.Context, field graphql.CollectedField, obj *model.Order) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Order_investorID(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -741,7 +742,7 @@ func (ec *executionContext) fieldContext_Order_investorID(ctx context.Context, f
 	return fc, nil
 }
 
-func (ec *executionContext) _Order_amount(ctx context.Context, field graphql.CollectedField, obj *Order) (ret graphql.Marshaler) {
+func (ec *executionContext) _Order_amount(ctx context.Context, field graphql.CollectedField, obj *model.Order) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Order_amount(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -811,9 +812,9 @@ func (ec *executionContext) _Query_investors(ctx context.Context, field graphql.
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*Investor)
+	res := resTmp.([]*model.Investor)
 	fc.Result = res
-	return ec.marshalNInvestor2ᚕᚖapiserverᚋgraphqlᚐInvestorᚄ(ctx, field.Selections, res)
+	return ec.marshalNInvestor2ᚕᚖapiserverᚋgraphqlᚋmodelᚐInvestorᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_investors(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -863,9 +864,9 @@ func (ec *executionContext) _Query_orders(ctx context.Context, field graphql.Col
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*Order)
+	res := resTmp.([]*model.Order)
 	fc.Result = res
-	return ec.marshalNOrder2ᚕᚖapiserverᚋgraphqlᚐOrderᚄ(ctx, field.Selections, res)
+	return ec.marshalNOrder2ᚕᚖapiserverᚋgraphqlᚋmodelᚐOrderᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_orders(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2791,8 +2792,8 @@ func (ec *executionContext) fieldContext___Type_specifiedByURL(ctx context.Conte
 
 // region    **************************** input.gotpl *****************************
 
-func (ec *executionContext) unmarshalInputcreateInvestorInput(ctx context.Context, obj interface{}) (CreateInvestorInput, error) {
-	var it CreateInvestorInput
+func (ec *executionContext) unmarshalInputcreateInvestorInput(ctx context.Context, obj interface{}) (model.CreateInvestorInput, error) {
+	var it model.CreateInvestorInput
 	asMap := map[string]interface{}{}
 	for k, v := range obj.(map[string]interface{}) {
 		asMap[k] = v
@@ -2818,8 +2819,8 @@ func (ec *executionContext) unmarshalInputcreateInvestorInput(ctx context.Contex
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputcreateOrderInput(ctx context.Context, obj interface{}) (CreateOrderInput, error) {
-	var it CreateOrderInput
+func (ec *executionContext) unmarshalInputcreateOrderInput(ctx context.Context, obj interface{}) (model.CreateOrderInput, error) {
+	var it model.CreateOrderInput
 	asMap := map[string]interface{}{}
 	for k, v := range obj.(map[string]interface{}) {
 		asMap[k] = v
@@ -2862,7 +2863,7 @@ func (ec *executionContext) unmarshalInputcreateOrderInput(ctx context.Context, 
 
 var investorImplementors = []string{"Investor"}
 
-func (ec *executionContext) _Investor(ctx context.Context, sel ast.SelectionSet, obj *Investor) graphql.Marshaler {
+func (ec *executionContext) _Investor(ctx context.Context, sel ast.SelectionSet, obj *model.Investor) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, investorImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -2967,7 +2968,7 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 
 var orderImplementors = []string{"Order"}
 
-func (ec *executionContext) _Order(ctx context.Context, sel ast.SelectionSet, obj *Order) graphql.Marshaler {
+func (ec *executionContext) _Order(ctx context.Context, sel ast.SelectionSet, obj *model.Order) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, orderImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -3479,11 +3480,11 @@ func (ec *executionContext) marshalNID2string(ctx context.Context, sel ast.Selec
 	return res
 }
 
-func (ec *executionContext) marshalNInvestor2apiserverᚋgraphqlᚐInvestor(ctx context.Context, sel ast.SelectionSet, v Investor) graphql.Marshaler {
+func (ec *executionContext) marshalNInvestor2apiserverᚋgraphqlᚋmodelᚐInvestor(ctx context.Context, sel ast.SelectionSet, v model.Investor) graphql.Marshaler {
 	return ec._Investor(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNInvestor2ᚕᚖapiserverᚋgraphqlᚐInvestorᚄ(ctx context.Context, sel ast.SelectionSet, v []*Investor) graphql.Marshaler {
+func (ec *executionContext) marshalNInvestor2ᚕᚖapiserverᚋgraphqlᚋmodelᚐInvestorᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Investor) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -3507,7 +3508,7 @@ func (ec *executionContext) marshalNInvestor2ᚕᚖapiserverᚋgraphqlᚐInvesto
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNInvestor2ᚖapiserverᚋgraphqlᚐInvestor(ctx, sel, v[i])
+			ret[i] = ec.marshalNInvestor2ᚖapiserverᚋgraphqlᚋmodelᚐInvestor(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -3527,7 +3528,7 @@ func (ec *executionContext) marshalNInvestor2ᚕᚖapiserverᚋgraphqlᚐInvesto
 	return ret
 }
 
-func (ec *executionContext) marshalNInvestor2ᚖapiserverᚋgraphqlᚐInvestor(ctx context.Context, sel ast.SelectionSet, v *Investor) graphql.Marshaler {
+func (ec *executionContext) marshalNInvestor2ᚖapiserverᚋgraphqlᚋmodelᚐInvestor(ctx context.Context, sel ast.SelectionSet, v *model.Investor) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -3537,11 +3538,11 @@ func (ec *executionContext) marshalNInvestor2ᚖapiserverᚋgraphqlᚐInvestor(c
 	return ec._Investor(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNOrder2apiserverᚋgraphqlᚐOrder(ctx context.Context, sel ast.SelectionSet, v Order) graphql.Marshaler {
+func (ec *executionContext) marshalNOrder2apiserverᚋgraphqlᚋmodelᚐOrder(ctx context.Context, sel ast.SelectionSet, v model.Order) graphql.Marshaler {
 	return ec._Order(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNOrder2ᚕᚖapiserverᚋgraphqlᚐOrderᚄ(ctx context.Context, sel ast.SelectionSet, v []*Order) graphql.Marshaler {
+func (ec *executionContext) marshalNOrder2ᚕᚖapiserverᚋgraphqlᚋmodelᚐOrderᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Order) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -3565,7 +3566,7 @@ func (ec *executionContext) marshalNOrder2ᚕᚖapiserverᚋgraphqlᚐOrderᚄ(c
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNOrder2ᚖapiserverᚋgraphqlᚐOrder(ctx, sel, v[i])
+			ret[i] = ec.marshalNOrder2ᚖapiserverᚋgraphqlᚋmodelᚐOrder(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -3585,7 +3586,7 @@ func (ec *executionContext) marshalNOrder2ᚕᚖapiserverᚋgraphqlᚐOrderᚄ(c
 	return ret
 }
 
-func (ec *executionContext) marshalNOrder2ᚖapiserverᚋgraphqlᚐOrder(ctx context.Context, sel ast.SelectionSet, v *Order) graphql.Marshaler {
+func (ec *executionContext) marshalNOrder2ᚖapiserverᚋgraphqlᚋmodelᚐOrder(ctx context.Context, sel ast.SelectionSet, v *model.Order) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -3863,12 +3864,12 @@ func (ec *executionContext) marshalN__TypeKind2string(ctx context.Context, sel a
 	return res
 }
 
-func (ec *executionContext) unmarshalNcreateInvestorInput2apiserverᚋgraphqlᚐCreateInvestorInput(ctx context.Context, v interface{}) (CreateInvestorInput, error) {
+func (ec *executionContext) unmarshalNcreateInvestorInput2apiserverᚋgraphqlᚋmodelᚐCreateInvestorInput(ctx context.Context, v interface{}) (model.CreateInvestorInput, error) {
 	res, err := ec.unmarshalInputcreateInvestorInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNcreateOrderInput2apiserverᚋgraphqlᚐCreateOrderInput(ctx context.Context, v interface{}) (CreateOrderInput, error) {
+func (ec *executionContext) unmarshalNcreateOrderInput2apiserverᚋgraphqlᚋmodelᚐCreateOrderInput(ctx context.Context, v interface{}) (model.CreateOrderInput, error) {
 	res, err := ec.unmarshalInputcreateOrderInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }

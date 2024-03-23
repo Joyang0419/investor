@@ -14,18 +14,18 @@ exec:
 
 # Where should any generated models go?
 model:
-  filename: graphql/models_gen.go
-  package: graphql
+  filename: graphql/model/models.go
+  package: model
   # Optional: Pass in a path to a new gotpl template to use for generating the models
   # model_template: [your/path/model.gotpl]
 
   # Where should the resolver implementations go?
   # 現階段沒意義，產一個空的，等到之後要用在解開
-  #resolver:
-  #  layout: follow-schema
-  #  dir: graph
-  #  package: graph
-  #  filename_template: "{name}.resolvers.go"
+resolver:
+  layout: follow-schema
+  dir: graphql/resolver
+  package: graphql
+  filename_template: "{name}.resolver.go"
   # Optional: turn on to not generate template comments above resolvers
   # omit_template_comment: false
   # Optional: Pass in a path to a new gotpl template to use for generating resolvers

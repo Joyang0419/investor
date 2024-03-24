@@ -18,6 +18,8 @@ services:
       test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
       timeout: 5s
       retries: 10
+    volumes:
+      - ../volume/mysql/data:/var/lib/mysql
 
   mongodb:
     image: mongo
@@ -31,6 +33,7 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: root
     volumes:
       - ../migration/mongodb/init.db.js:/docker-entrypoint-initdb.d/init.db.js:ro
+      - ../volume/mongodb/data:/data/db
     ports:
       - "27017:27017"
 

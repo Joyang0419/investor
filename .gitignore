@@ -23,3 +23,6 @@ go.work
 *idea
 *pb.go
 go.sum
+
+# 遺忘docker volume
+build/volume/*

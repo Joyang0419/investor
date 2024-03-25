@@ -22,8 +22,8 @@ type StockDailyPriceQuery struct {
 	client *mongo.Client
 }
 
-func (q *StockDailyPriceQuery) DailyPrices(ctx context.Context, timeout time.Duration, opts ...QueryOption) (prices []StockDailyPriceSchema, err error) {
-	return All[[]StockDailyPriceSchema](ctx, q.client, timeout, StockDailyPriceStorage, opts...)
+func (q *StockDailyPriceQuery) DailyPrices(ctx context.Context, timeout time.Duration, opts ...FindOption) (prices []StockDailyPriceSchema, err error) {
+	return All[[]StockDailyPriceSchema](ctx, q.client, timeout, StockDailyPriceStorage, nil, opts...)
 }
 
 type StockDailyPriceCommand struct {

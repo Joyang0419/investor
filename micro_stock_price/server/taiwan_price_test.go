@@ -1,7 +1,7 @@
 package server
 
 import (
-	"fmt"
+	"log"
 	"testing"
 	"time"
 
@@ -11,7 +11,7 @@ import (
 func TestCrawlTWSEDailyPrices(t *testing.T) {
 	location, err := time.LoadLocation("Asia/Taipei")
 	if err != nil {
-		fmt.Println("加载时区失败:", err)
+		log.Fatalf("加载时区失败: %v", err)
 		return
 	}
 	prices, err := CrawlTWSEDailyPrices(

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -109,11 +110,15 @@ func CrawlTWSEDailyPrices(stockCode string, chooseDateTime time.Time) (prices []
 		}
 		prices[idx].ClosingPrice = floatValue
 
-		// 去除空格, +
+		// 去除空格, +, X
+		re := regexp.MustCompile(`[\+X]`)
+
 		floatValue, errFloatValue = StrToFloat64(
-			strings.ReplaceAll(
-				strings.ReplaceAll(
-					response.Data[idx][7], "+", ""), " ", ""))
+			strings.TrimSpace(
+				re.ReplaceAllString(response.Data[idx][7], ""),
+			),
+		)
+
 		if errFloatValue != nil {
 			return nil, fmt.Errorf("[CrawlTWSEDailyPrices]strconv.ParseFloat err: %w", errFloatValue)
 		}

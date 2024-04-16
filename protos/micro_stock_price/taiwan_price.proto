@@ -4,8 +4,6 @@ option go_package = "protos/micro_stock_price";
 service TaiwanPrice {
   // 獲取每日價格
   rpc GetDailyPrices (DailyPricesRequest) returns (DailyPricesResponse);
-  // 抓取每日價格(爬蟲)
-  rpc CrawlDailyPrices(DailyPricesRequest)  returns (DailyPricesResponse);
 }
 
 message DailyPricesRequest {

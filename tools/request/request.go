@@ -5,13 +5,12 @@ import (
 	"io"
 	"net/http"
 	"slices"
+	"time"
 
 	"tools/serialization"
 )
 
-var client = &http.Client{}
-
-func HttpRequest[T any](url, method string, headers map[string]string, allowedHttpStatusCodes ...int) (response T, err error) {
+func HttpRequest[T any](url, method string, headers map[string]string, timeout time.Duration, allowedHttpStatusCodes ...int) (response T, err error) {
 	// 创建一个 HTTP 请求
 	if len(allowedHttpStatusCodes) == 0 {
 		allowedHttpStatusCodes = []int{http.StatusOK}
@@ -28,6 +27,7 @@ func HttpRequest[T any](url, method string, headers map[string]string, allowedHt
 	}
 
 	// 发送请求
+	client := &http.Client{Timeout: timeout}
 	resp, err := client.Do(req)
 	if err != nil {
 		return response, fmt.Errorf("[HttpRequest]client.Do err: %w", err)

@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -65,7 +66,7 @@ func TestHttpRequest(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			var resp response
-			resp, err := HttpRequest[response](tt.url, tt.method, tt.headers, tt.allowedHttpStatusCodes...)
+			resp, err := HttpRequest[response](tt.url, tt.method, tt.headers, 10*time.Second, tt.allowedHttpStatusCodes...)
 
 			if tt.expectError {
 				assert.Error(t, err)

@@ -11,7 +11,7 @@ import (
 
 type MySQLCfg struct {
 	Host            string        `mapstructure:"Host" default:"localhost"`
-	Port            string        `mapstructure:"Port" default:"3306"`
+	Port            int           `mapstructure:"Port" default:"3306"`
 	Username        string        `mapstructure:"Username" default:"root"`
 	Password        string        `mapstructure:"Password" default:"root"`
 	Database        string        `mapstructure:"Database" default:"dev"`
@@ -23,7 +23,7 @@ type MySQLCfg struct {
 func SetupMySQL(config MySQLCfg, logger logger.Interface) (*gorm.DB, error) {
 	// dataSourceName
 	dsn := fmt.Sprintf(
-		"%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=UTC",
+		"%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=UTC",
 		config.Username,
 		config.Password,
 		config.Host,

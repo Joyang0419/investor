@@ -32,7 +32,7 @@ func runServerCmd(_ *cobra.Command, _ []string) {
 	// todo 這只是一個範例，基本上，這邊不會有db連線，全部應該是 grpc Client
 	mysqlDbConn, err := infra_conn.SetupMySQL(infra_conn.MySQLCfg{
 		Host:            "localhost",
-		Port:            "3306",
+		Port:            3306,
 		Username:        "root",
 		Password:        "root",
 		Database:        "investor",

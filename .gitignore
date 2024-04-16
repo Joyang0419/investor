@@ -26,3 +26,6 @@ go.sum
 
 # 遺忘docker volume
 build/volume/*
+
+*.vscode
+*.DS_Store

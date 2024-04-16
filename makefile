@@ -30,3 +30,7 @@ GenGraphQL:
 
 MigrateUp:
 	cd build/dev && docker-compose up -d flyway
+
+# 啟動micro_stock_price dailyPrice 腳本, 記得要先建置MYSQL資料庫並執行Flyway, 確認table: daily_price存在
+RunMicroStockPriceDailyPrice:
+	cd micro_stock_price && go mod tidy && go run main.go dailyPrice

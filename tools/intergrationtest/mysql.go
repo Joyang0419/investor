@@ -3,10 +3,11 @@ package intergrationtest
 import (
 	"io"
 	"log"
+	"strconv"
 	"time"
 
 	"gorm.io/gorm"
-	"gorm.io/gorm/logger"
+
 	"tools/infra_conn"
 
 	"github.com/go-sql-driver/mysql"
@@ -43,20 +44,25 @@ func CreateMySQLContainer(name string) (*dockertest.Pool, *dockertest.Resource, 
 		log.Fatalf("set logger failed: %v", err)
 	}
 
+	portToInt, err := strconv.ParseInt(port, 10, 64)
+	if err != nil {
+		log.Fatalf("strconv.ParseInt failed: %v", err)
+	}
+
 	var dbConn *gorm.DB
 	if err = pool.Retry(func() error {
 		var retryErr error
 		if dbConn, retryErr = infra_conn.SetupMySQL(
 			infra_conn.MySQLCfg{
 				Host:            host,
-				Port:            port,
+				Port:            int(portToInt),
 				Username:        "joy",
 				Password:        "joy",
 				Database:        "dev",
 				MaxIdleConns:    10,
 				MaxOpenConns:    10,
 				ConnMaxLifeTime: 60 * time.Second,
-			}, logger.Discard.LogMode(logger.Silent),
+			},
 		); retryErr != nil {
 			return retryErr
 		}

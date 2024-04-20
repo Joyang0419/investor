@@ -3,7 +3,6 @@ package intergrationtest
 import (
 	"io"
 	"log"
-	"strconv"
 	"time"
 
 	"gorm.io/gorm"
@@ -44,7 +43,6 @@ func CreateMySQLContainer(name string) (*dockertest.Pool, *dockertest.Resource, 
 		log.Fatalf("set logger failed: %v", err)
 	}
 
-	portToInt, err := strconv.ParseInt(port, 10, 64)
 	if err != nil {
 		log.Fatalf("strconv.ParseInt failed: %v", err)
 	}
@@ -55,14 +53,14 @@ func CreateMySQLContainer(name string) (*dockertest.Pool, *dockertest.Resource, 
 		if dbConn, retryErr = infra_conn.SetupMySQL(
 			infra_conn.MySQLCfg{
 				Host:            host,
-				Port:            int(portToInt),
+				Port:            port,
 				Username:        "joy",
 				Password:        "joy",
 				Database:        "dev",
 				MaxIdleConns:    10,
 				MaxOpenConns:    10,
 				ConnMaxLifeTime: 60 * time.Second,
-			},
+			}, nil,
 		); retryErr != nil {
 			return retryErr
 		}

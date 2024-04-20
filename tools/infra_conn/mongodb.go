@@ -12,7 +12,7 @@ import (
 // MongoDBCfg MongoDB配置結構
 type MongoDBCfg struct {
 	Host            string
-	Port            string
+	Port            int
 	Username        string
 	Password        string
 	Database        string
@@ -24,7 +24,7 @@ type MongoDBCfg struct {
 // SetupMongoDB 用於建立與MongoDB的連線
 func SetupMongoDB(config MongoDBCfg) (*mongo.Client, error) {
 	// 建立MongoDB客戶端配置
-	uri := fmt.Sprintf("mongodb://%s:%s@%s:%s/%s", config.Username, config.Password, config.Host, config.Port, config.Database)
+	uri := fmt.Sprintf("mongodb://%s:%s@%s:%d/%s", config.Username, config.Password, config.Host, config.Port, config.Database)
 	clientOptions := options.Client().
 		ApplyURI(uri).
 		SetConnectTimeout(config.ConnectTimeout).

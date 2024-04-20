@@ -1,4 +1,4 @@
-package mongodb
+package mongodbx
 
 import (
 	"context"
@@ -91,7 +91,7 @@ func TestWithOffset(t *testing.T) {
 	assert.Equal(t, offset, *opts.Skip)
 }
 
-var testMongoStorage = MongoStorage{
+var testMongoStorage = Storage{
 	Database:   "Database",
 	Collection: "Collection",
 }

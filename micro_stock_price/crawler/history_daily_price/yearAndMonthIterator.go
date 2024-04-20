@@ -1,4 +1,9 @@
-package taiwan_stock
+package history_daily_price
+
+type YearAndMonth struct {
+	Year  uint32
+	Month uint32
+}
 
 type YearAndMonthIterator struct {
 	currentYear  uint32

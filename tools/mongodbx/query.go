@@ -1,4 +1,4 @@
-package mongodb
+package mongodbx
 
 import (
 	"context"
@@ -60,7 +60,7 @@ func All[responseType any](
 	ctx context.Context,
 	mongoDBClient *mongo.Client,
 	timeout time.Duration,
-	storage MongoStorage,
+	storage Storage,
 	filter map[string]any,
 	opts ...FindOption,
 ) (resp responseType, err error) {

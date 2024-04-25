@@ -4,8 +4,10 @@ go 1.21.5
 
 require (
 	github.com/bytedance/sonic v1.11.3
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gin-gonic/gin v1.9.1
 	github.com/go-sql-driver/mysql v1.7.0
+	github.com/mitchellh/mapstructure v1.5.0
 	github.com/ory/dockertest v3.3.5+incompatible
 	github.com/sirupsen/logrus v1.9.3
 	github.com/stretchr/testify v1.9.0

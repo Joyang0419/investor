@@ -8,7 +8,6 @@ import (
 )
 
 func TestBcryptHash_Hash(t *testing.T) {
-	// TODO b := NewBcrypt() 你該注入的是這個Bcrypt
 	b := NewBcrypt(bcrypt.DefaultCost)
 	h, err := b.Hash([]byte("123456"))
 

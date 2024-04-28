@@ -20,23 +20,6 @@ services:
       retries: 10
     volumes:
       - ../volume/mysql/data:/var/lib/mysql
-
-  mongodb:
-    image: mongo
-    container_name: mongodb
-    restart: always
-    build:
-      context: .
-      dockerfile: ./mongodb/Dockerfile
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: root
-    volumes:
-      - ../migration/mongodb/init.db.js:/docker-entrypoint-initdb.d/init.db.js:ro
-      - ../volume/mongodb/data:/data/db
-    ports:
-      - "27017:27017"
-
   flyway:
     image: flyway/flyway:latest
     container_name: flyway
@@ -53,3 +36,30 @@ services:
       mysql:
         condition: service_healthy
     command: [ "migrate" ]  # 指定要执行的 Flyway 命令
+
+  mongodb:
+    image: mongo
+    container_name: mongodb
+    restart: always
+    build:
+      context: .
+      dockerfile: ./mongodb/Dockerfile
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+    volumes:
+      - ../volume/mongodb/data:/data/db
+    ports:
+      - "27017:27017"
+
+  migrate-mongo:
+    container_name: migrate-mongo
+    build:
+      context: .
+      dockerfile: ./migrate-mongo/Dockerfile
+    volumes:
+      - ../migration/mongodb:/app/migrations  # 遷移腳本目錄
+      - ./migrate-mongo/migrate-mongo-config.js:/app/migrate-mongo-config.js  # 配置文件
+    depends_on:
+      - mongodb
+    command: ["migrate-mongo", "up"]

@@ -2,18 +2,21 @@ package cmd
 
 import (
 	"log"
-	"time"
 
-	graphql "apiserver/graphql/resolver"
-	"apiserver/router"
-	"tools/infra_conn"
-	"tools/logger"
+	"github.com/gin-gonic/gin"
 
 	"github.com/spf13/cobra"
+
+	graphql "apiserver/graphql/resolver"
+	"apiserver/middleware"
+	"apiserver/router"
+	"tools/encryption"
+	"tools/logger"
 )
 
+// TODO 改成server
 var serverCmd = &cobra.Command{
-	Use:   "server",
+	Use:   "apiserver",
 	Short: "",
 	Long:  "",
 	Run:   runServerCmd,
@@ -26,46 +29,25 @@ func init() {
 // todo: graceful shutdown: https://learnku.com/docs/gin-gonic/1.5/examples-graceful-restart-or-stop/6173
 
 func runServerCmd(_ *cobra.Command, _ []string) {
-	// 設定Infra 連線 && 可以用makefile中: UpDevInfra 建置
-	// todo viper db 設定
-	// todo 缺少一個 mongoDB init.db .js 自動建置 investor database
-	// todo 這只是一個範例，基本上，這邊不會有db連線，全部應該是 grpc Client
-	mysqlDbConn, err := infra_conn.SetupMySQL(infra_conn.MySQLCfg{
-		Host:            "localhost",
-		Port:            3306,
-		Username:        "root",
-		Password:        "root",
-		Database:        "investor",
-		MaxIdleConns:    20,
-		MaxOpenConns:    20,
-		ConnMaxLifeTime: 15 * time.Minute,
-	}, nil)
-	if err != nil {
-		log.Fatalf("[runServerCmd]infra_conn.SetupMySQL err: %v", err)
-	}
-
-	mongoDBConn, err := infra_conn.SetupMongoDB(infra_conn.MongoDBCfg{
-		Host:            "localhost",
-		Port:            "27017",
-		Username:        "root",
-		Password:        "root",
-		Database:        "admin",
-		ConnectTimeout:  20 * time.Second,
-		MaxPoolSize:     20,
-		MaxConnIdleTime: 10 * time.Minute,
+	// TODO secretkey 變字串
+	jwtEncryption := encryption.NewJWTEncryption[middleware.TokenInfo](encryption.JWTRequirements{
+		SecretKey:     nil,
+		SigningMethod: nil,
 	})
-	if err != nil {
-		log.Fatalf("[runGateway]infra_conn.SetupMongoDB err: %v", err)
-	}
 
-	_, _ = mysqlDbConn, mongoDBConn
-
-	r := router.NewGinRouter(graphql.NewResolver(graphql.NewQueryResolver(), graphql.NewMutationResolver()), logger.GinLogger())
+	r := router.NewGinRouter(
+		graphql.NewResolver(
+			graphql.NewQueryResolver(),
+			graphql.NewMutationResolver(),
+		),
+		[]gin.HandlerFunc{logger.GinLogger()},
+		jwtEncryption,
+	)
 
 	// 啟動服務
 	// todo viper 環境變數 :8080
-	if err = r.Run(":8080"); err != nil {
-		log.Fatalf("[runServerCmd] route.Run err: %v", err)
+	if err := r.Run(":8080"); err != nil {
+		log.Fatalf("[runServerCmd]r.Run err: %v", err)
 	}
 	log.Print("[runServerCmd]success on port: 8080")
 }

@@ -9,3 +9,12 @@ func IsEmpty[T any](s []T) bool {
 func IsNotEmpty[T any](s []T) bool {
 	return len(s) != 0
 }
+
+// CheckLengthFitExpected 判斷切片長度是否等於指定長度
+func CheckLengthFitExpected[T any](s []T, expected int) bool {
+	return len(s) == expected
+}
+
+func GetLength[T any](s []T) int {
+	return len(s)
+}

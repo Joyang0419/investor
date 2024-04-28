@@ -6,15 +6,15 @@ import (
 	"protos/micro_stock_price"
 )
 
-type TaiwanStockServer struct {
+type Server struct {
 	micro_stock_price.UnimplementedTaiwanPriceServer
 }
 
-func NewTaiwanPriceServer() micro_stock_price.TaiwanPriceServer {
-	return &TaiwanStockServer{}
+func NewServer() micro_stock_price.TaiwanPriceServer {
+	return &Server{}
 }
 
-func (server *TaiwanStockServer) GetDailyPrices(_ context.Context, _ *micro_stock_price.DailyPricesRequest) (*micro_stock_price.DailyPricesResponse, error) {
+func (server *Server) GetDailyPrices(_ context.Context, _ *micro_stock_price.DailyPricesRequest) (*micro_stock_price.DailyPricesResponse, error) {
 	//TODO implement me
 	panic("implement me")
 }

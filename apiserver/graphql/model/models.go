@@ -3,28 +3,25 @@
 package model
 
 type Investor struct {
-	InvestorID string   `json:"investorID"`
-	Name       string   `json:"name"`
-	Orders     []*Order `json:"orders"`
+	InvestorID   string `json:"investorID"`
+	LoginAccount string `json:"loginAccount"`
+	Password     string `json:"password"`
 }
 
 type Mutation struct {
-}
-
-type Order struct {
-	OrderID    string  `json:"orderID"`
-	InvestorID string  `json:"investorID"`
-	Amount     float64 `json:"amount"`
 }
 
 type Query struct {
 }
 
 type CreateInvestorInput struct {
-	Name string `json:"name"`
+	LoginAccount string `json:"loginAccount"`
+	Password     string `json:"password"`
 }
 
-type CreateOrderInput struct {
-	InvestorID string  `json:"investorID"`
-	Amount     float64 `json:"amount"`
+type QueryInvestorsParams struct {
+	InvestorIDs   []string `json:"investorIDs"`
+	LoginAccounts []string `json:"loginAccounts"`
+	PageSize      int      `json:"pageSize"`
+	Page          int      `json:"page"`
 }

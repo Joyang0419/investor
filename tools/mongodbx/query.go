@@ -26,6 +26,15 @@ func FilterDateRange(field string, startDate, endDate time.Time) map[string]any 
 	}
 }
 
+// TODO TEST
+func FilterFieldInValues[valueType any](field string, values []valueType) map[string]any {
+	return map[string]any{
+		field: map[string]any{
+			"$in": values,
+		},
+	}
+}
+
 func WithProjection(showFields []string) FindOption {
 	return func(opts *options.FindOptions) {
 		m := bson.M{}

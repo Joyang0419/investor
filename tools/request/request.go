@@ -38,7 +38,7 @@ func HttpRequest[T any](url, method string, headers map[string]string, timeout t
 
 	// 检查响应状态码
 	if !slices.Contains(allowedHttpStatusCodes, resp.StatusCode) {
-		return response, fmt.Errorf("[HttpRequest] resp.StatusCode not in allowedHttpStatusCodes, resp.StatusCode:%v, allowedHttpStatusCodes: %v", resp.StatusCode, allowedHttpStatusCodes)
+		return response, fmt.Errorf("[HttpRequest] resp.CustomCode not in allowedHttpStatusCodes, resp.CustomCode:%v, allowedHttpStatusCodes: %v", resp.StatusCode, allowedHttpStatusCodes)
 	}
 
 	// 读取响应体

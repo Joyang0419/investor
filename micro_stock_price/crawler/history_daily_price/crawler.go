@@ -13,7 +13,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 
 	"micro_stock_price/crawler"
-	"repo/mongodb"
+	"repo/mongodb/schema/stock_daily_price"
 	"tools/logger"
 	"tools/request"
 	"tools/timex"
@@ -30,12 +30,12 @@ type crawlParamType struct {
 	chooseYearAndMonth YearAndMonth
 }
 
-type CrawledDataType = []mongodb.StockDailyPriceSchema
+type CrawledDataType = []stock_daily_price.Schema
 
 type errDataType = string
 
 type ICommand interface {
-	InsertMany(ctx context.Context, timeout time.Duration, data []mongodb.StockDailyPriceSchema) (*mongo.InsertManyResult, error)
+	InsertMany(ctx context.Context, timeout time.Duration, data []stock_daily_price.Schema) (*mongo.InsertManyResult, error)
 }
 
 type Crawler struct {
@@ -136,7 +136,7 @@ func (c *Crawler) Crawl(crawlParam crawlParamType, timeout time.Duration, random
 			return nil, fmt.Errorf("[crawlTWSEDailyPrices]timex.ParseInLocation err: %w", err)
 		}
 
-		response[idx] = mongodb.StockDailyPriceSchema{}
+		response[idx] = stock_daily_price.Schema{}
 		response[idx].DateTimestamp = parsedTime.Unix()
 		response[idx].StockCode = crawlParam.stockCode
 

@@ -11,7 +11,7 @@ GenProtos:
 
 # 啟動ApiServer服務
 RunApiServer:
-	cd apiserver && go mod tidy && go run main.go server
+	cd apiserver && go mod tidy && go run main.go apiserver
 
 # 啟動micro_stock_price
 RunMicroStockPrice:
@@ -28,9 +28,12 @@ DownDevInfra:
 GenGraphQL:
 	cd apiserver && go run github.com/99designs/gqlgen generate
 
-MigrateUp:
+MigrateUpMySQL:
 	cd build/dev && docker-compose up -d flyway
 
 # 啟動micro_stock_price dailyPrice 腳本, 記得要先建置MYSQL資料庫並執行Flyway, 確認table: daily_price存在
 RunMicroStockPriceDailyPrice:
 	cd micro_stock_price && go mod tidy && go run main.go dailyPrice
+
+MigrateUpMongoDB:
+	cd build/dev && docker-compose up -d migrate-mongo

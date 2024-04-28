@@ -1,0 +1,29 @@
+syntax = "proto3";
+option go_package = "protos/micro_auth";
+
+service InvestorService {
+  rpc GetInvestors (QueryInvestorsParams) returns (InvestorsResponse);
+  rpc CreateInvestor (CreateInvestorInput) returns (Investor);
+}
+
+message Investor {
+  string investorID = 1;
+  string loginAccount = 2;
+  string password = 3;
+}
+
+message CreateInvestorInput {
+  string loginAccount = 1;
+  string password = 2;
+}
+
+message QueryInvestorsParams {
+  repeated string investorIDs = 1;
+  repeated string loginAccounts = 2;
+  uint32 pageSize = 3;
+  uint32 page = 4;
+}
+
+message InvestorsResponse {
+  repeated Investor investors = 1;
+}

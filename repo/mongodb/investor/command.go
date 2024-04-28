@@ -1,4 +1,4 @@
-package stock_daily_price
+package investor
 
 import (
 	"context"
@@ -7,7 +7,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 
 	"repo/mongodb"
-	"repo/mongodb/schema/stock_daily_price"
+	"repo/mongodb/schema/investor"
 	"tools/mongodbx"
 )
 
@@ -22,13 +22,13 @@ func NewCommand(client *mongo.Client) *Command {
 func (cmd *Command) InsertMany(
 	ctx context.Context,
 	timeout time.Duration,
-	data []stock_daily_price.Schema,
+	data []investor.Schema,
 ) (*mongo.InsertManyResult, error) {
 	return mongodbx.InsertMany(
 		ctx,
 		cmd.client,
 		timeout,
-		mongodb.StockDailyPriceStorage,
+		mongodb.InvestorStorage,
 		data,
 	)
 }

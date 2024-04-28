@@ -11,7 +11,7 @@ func TestEncryptGeneratesValidJWT(t *testing.T) {
 	encrypt := NewJWTEncryption[jwt.MapClaims](
 		JWTRequirements{
 			SecretKey:     []byte("secret"),
-			SigningMethod: jwt.SigningMethodHS256,
+			SigningMethod: JWTSigningMethodHS256,
 		},
 	)
 	token, err := encrypt.Encrypt(jwt.MapClaims{"foo": "bar"})

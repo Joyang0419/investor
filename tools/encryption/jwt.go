@@ -7,6 +7,14 @@ import (
 	"github.com/mitchellh/mapstructure"
 )
 
+var (
+	JWTSigningMethodHS256 = jwt.SigningMethodHS256
+	JWTSigningMethodHS384 = jwt.SigningMethodHS384
+	JWTSigningMethodHS512 = jwt.SigningMethodHS512
+)
+
+type JWTMapClaims = jwt.MapClaims
+
 // JWTRequirements 定義 JWT 特定的設定需求。
 type JWTRequirements struct {
 	SecretKey     []byte
@@ -18,7 +26,7 @@ type JWTEncryption[decryptedType any] struct {
 }
 
 func (encrypt *JWTEncryption[decryptedType]) SetEncryptionRequirements(requirements JWTRequirements) {
-	if requirements.SecretKey == nil {
+	if len(requirements.SecretKey) == 0 {
 		panic("[JWTEncryption][SetEncryptionRequirements]SecretKey is required")
 	}
 	if requirements.SigningMethod == nil {

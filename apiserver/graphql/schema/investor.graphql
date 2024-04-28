@@ -1,18 +1,28 @@
-type Investor {
-    investorID: ID!
-    name: String!
-    orders: [Order!]!
+type Query {
+    Investors(queryParams: queryInvestorsParams!): [Investor!]!
 }
 
-extend type Query {
-    investors: [Investor!]!
-}
-
-input createInvestorInput {
-    name: String!
-}
-
-extend type Mutation {
+type Mutation {
     createInvestor(input: createInvestorInput!): Investor!
 }
 
+type Investor {
+    investorID: ID!
+    loginAccount: String!
+    password: String!
+}
+
+
+# TODO 不需要 -> 直接在createInvestor 加入logonAccount, password
+input createInvestorInput {
+    loginAccount: String!
+    password: String!
+}
+
+# TODO 驚嘆號的用意，補在README.md, 目前猜測是強型別
+input queryInvestorsParams {
+    investorIDs: [ID!]!
+    loginAccounts: [String!]!
+    pageSize: Int!
+    page: Int!
+}

@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"log"
 	"net"
 
@@ -8,8 +9,9 @@ import (
 
 	"micro_stock_price/server/taiwan_stock"
 	"protos/micro_stock_price"
-	"repo/mysql"
 	"tools/logger"
+
+	"definition/micro_port"
 
 	"github.com/spf13/cobra"
 )
@@ -26,7 +28,7 @@ func init() {
 }
 
 func runServerCmd(_ *cobra.Command, _ []string) {
-	lis, err := net.Listen("tcp", ":50051")
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", micro_port.MicroStockPricePort))
 	if err != nil {
 		log.Fatalf("net.Listen err: %v", err)
 	}
@@ -35,7 +37,7 @@ func runServerCmd(_ *cobra.Command, _ []string) {
 	// 註冊服務
 	micro_stock_price.RegisterTaiwanPriceServer(
 		s,
-		taiwan_stock.NewTaiwanPriceServer(mysql.NewTaiwanStockRepo(nil)),
+		taiwan_stock.NewServer(),
 	)
 
 	logger.Info("gRPC server listening at %v", lis.Addr())

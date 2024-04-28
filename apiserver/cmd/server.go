@@ -14,9 +14,8 @@ import (
 	"tools/logger"
 )
 
-// TODO 改成server
 var serverCmd = &cobra.Command{
-	Use:   "apiserver",
+	Use:   "server",
 	Short: "",
 	Long:  "",
 	Run:   runServerCmd,

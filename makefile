@@ -11,7 +11,7 @@ GenProtos:
 
 # 啟動ApiServer服務
 RunApiServer:
-	cd apiserver && go mod tidy && go run main.go apiserver
+	cd apiserver && go mod tidy && go run main.go server
 
 # 啟動micro_stock_price
 RunMicroStockPrice:

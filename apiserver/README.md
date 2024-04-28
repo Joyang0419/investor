@@ -14,3 +14,37 @@
     - model_gen 無法依照schema分開放: 
     - https://github.com/99designs/gqlgen/issues/1265
     - https://github.com/99designs/gqlgen/issues/2399
+
+# TODO example, 方便先熟悉GraphQL, 之後準備刪除, 找一款好用的GraphQL client
+```graphql 
+query {
+  Investors(
+    queryParams: {
+      investorIDs: [], 
+      loginAccounts: [], 
+      pageSize: 10, 
+      page: 1
+    }
+  ) {
+    investorID
+    loginAccount
+  }
+}
+
+```
+
+```graphql
+mutation {
+  createInvestor(
+    input: {
+      loginAccount: "Hello", 
+      password: "qq1234",
+    }
+  	) 
+  {
+    investorID
+    loginAccount
+    password
+  }
+}
+```

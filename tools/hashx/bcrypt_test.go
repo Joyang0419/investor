@@ -8,13 +8,8 @@ import (
 )
 
 func TestBcryptHash_Hash(t *testing.T) {
-	b := NewBcrypt()
-	b.SetHashRequirements(HashRequirements{
-		HashFunc:    bcrypt.GenerateFromPassword,
-		CompareFunc: bcrypt.CompareHashAndPassword,
-		Cost:        bcrypt.DefaultCost,
-	})
-
+	// TODO b := NewBcrypt() 你該注入的是這個Bcrypt
+	b := NewBcrypt(bcrypt.DefaultCost)
 	h, err := b.Hash([]byte("123456"))
 
 	assert.NoError(t, err)
@@ -22,12 +17,7 @@ func TestBcryptHash_Hash(t *testing.T) {
 }
 
 func TestBcryptHash_CompareHash(t *testing.T) {
-	b := NewBcrypt()
-	b.SetHashRequirements(HashRequirements{
-		HashFunc:    bcrypt.GenerateFromPassword,
-		CompareFunc: bcrypt.CompareHashAndPassword,
-		Cost:        bcrypt.DefaultCost,
-	})
+	b := NewBcrypt(bcrypt.DefaultCost)
 
 	h, err := b.Hash([]byte("123456"))
 

@@ -20,7 +20,7 @@ type TokenInfo struct {
 }
 
 // TODO 加入 expiretime and 將Token 存入 redis, 我要做到logout, 清除所有這個user的token
-func JWTMiddleware(
+func JWT(
 	encryption encryption.IEncryption[
 		encryption.JWTRequirements,
 		encryption.JWTMapClaims, string,
@@ -40,6 +40,7 @@ func JWTMiddleware(
 			)
 			return
 		}
+
 		// Remove Bearer prefix
 		token := stringx.TrimPrefix(authorization, "Bearer ")
 

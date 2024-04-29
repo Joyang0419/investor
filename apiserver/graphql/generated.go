@@ -48,25 +48,27 @@ type DirectiveRoot struct {
 
 type ComplexityRoot struct {
 	Investor struct {
-		InvestorID   func(childComplexity int) int
-		LoginAccount func(childComplexity int) int
-		Password     func(childComplexity int) int
+		ID       func(childComplexity int) int
+		Password func(childComplexity int) int
+		Username func(childComplexity int) int
 	}
 
 	Mutation struct {
 		CreateInvestor func(childComplexity int, input model.CreateInvestorInput) int
+		Login          func(childComplexity int, input model.LoginInput) int
 	}
 
 	Query struct {
-		Investors func(childComplexity int, queryParams model.QueryInvestorsParams) int
+		Investors func(childComplexity int, input model.QueryInvestorsInput) int
 	}
 }
 
 type MutationResolver interface {
 	CreateInvestor(ctx context.Context, input model.CreateInvestorInput) (*model.Investor, error)
+	Login(ctx context.Context, input model.LoginInput) (string, error)
 }
 type QueryResolver interface {
-	Investors(ctx context.Context, queryParams model.QueryInvestorsParams) ([]*model.Investor, error)
+	Investors(ctx context.Context, input model.QueryInvestorsInput) ([]*model.Investor, error)
 }
 
 type executableSchema struct {
@@ -88,19 +90,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 	_ = ec
 	switch typeName + "." + field {
 
-	case "Investor.investorID":
-		if e.complexity.Investor.InvestorID == nil {
+	case "Investor.id":
+		if e.complexity.Investor.ID == nil {
 			break
 		}
 
-		return e.complexity.Investor.InvestorID(childComplexity), true
-
-	case "Investor.loginAccount":
-		if e.complexity.Investor.LoginAccount == nil {
-			break
-		}
-
-		return e.complexity.Investor.LoginAccount(childComplexity), true
+		return e.complexity.Investor.ID(childComplexity), true
 
 	case "Investor.password":
 		if e.complexity.Investor.Password == nil {
@@ -108,6 +103,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Investor.Password(childComplexity), true
+
+	case "Investor.username":
+		if e.complexity.Investor.Username == nil {
+			break
+		}
+
+		return e.complexity.Investor.Username(childComplexity), true
 
 	case "Mutation.createInvestor":
 		if e.complexity.Mutation.CreateInvestor == nil {
@@ -121,17 +123,29 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.CreateInvestor(childComplexity, args["input"].(model.CreateInvestorInput)), true
 
-	case "Query.Investors":
-		if e.complexity.Query.Investors == nil {
+	case "Mutation.login":
+		if e.complexity.Mutation.Login == nil {
 			break
 		}
 
-		args, err := ec.field_Query_Investors_args(context.TODO(), rawArgs)
+		args, err := ec.field_Mutation_login_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Query.Investors(childComplexity, args["queryParams"].(model.QueryInvestorsParams)), true
+		return e.complexity.Mutation.Login(childComplexity, args["input"].(model.LoginInput)), true
+
+	case "Query.investors":
+		if e.complexity.Query.Investors == nil {
+			break
+		}
+
+		args, err := ec.field_Query_investors_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Investors(childComplexity, args["input"].(model.QueryInvestorsInput)), true
 
 	}
 	return 0, false
@@ -141,8 +155,9 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	rc := graphql.GetOperationContext(ctx)
 	ec := executionContext{rc, e, 0, 0, make(chan graphql.DeferredResult)}
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
-		ec.unmarshalInputcreateInvestorInput,
-		ec.unmarshalInputqueryInvestorsParams,
+		ec.unmarshalInputCreateInvestorInput,
+		ec.unmarshalInputLoginInput,
+		ec.unmarshalInputQueryInvestorsInput,
 	)
 	first := true
 
@@ -265,7 +280,7 @@ func (ec *executionContext) field_Mutation_createInvestor_args(ctx context.Conte
 	var arg0 model.CreateInvestorInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNcreateInvestorInput2apiserverᚋgraphqlᚋmodelᚐCreateInvestorInput(ctx, tmp)
+		arg0, err = ec.unmarshalNCreateInvestorInput2apiserverᚋgraphqlᚋmodelᚐCreateInvestorInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -274,18 +289,18 @@ func (ec *executionContext) field_Mutation_createInvestor_args(ctx context.Conte
 	return args, nil
 }
 
-func (ec *executionContext) field_Query_Investors_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_login_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 model.QueryInvestorsParams
-	if tmp, ok := rawArgs["queryParams"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("queryParams"))
-		arg0, err = ec.unmarshalNqueryInvestorsParams2apiserverᚋgraphqlᚋmodelᚐQueryInvestorsParams(ctx, tmp)
+	var arg0 model.LoginInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNLoginInput2apiserverᚋgraphqlᚋmodelᚐLoginInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["queryParams"] = arg0
+	args["input"] = arg0
 	return args, nil
 }
 
@@ -301,6 +316,21 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 		}
 	}
 	args["name"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_investors_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.QueryInvestorsInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNQueryInvestorsInput2apiserverᚋgraphqlᚋmodelᚐQueryInvestorsInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
 	return args, nil
 }
 
@@ -342,8 +372,8 @@ func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArg
 
 // region    **************************** field.gotpl *****************************
 
-func (ec *executionContext) _Investor_investorID(ctx context.Context, field graphql.CollectedField, obj *model.Investor) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Investor_investorID(ctx, field)
+func (ec *executionContext) _Investor_id(ctx context.Context, field graphql.CollectedField, obj *model.Investor) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Investor_id(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -356,7 +386,7 @@ func (ec *executionContext) _Investor_investorID(ctx context.Context, field grap
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.InvestorID, nil
+		return obj.ID, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -373,7 +403,7 @@ func (ec *executionContext) _Investor_investorID(ctx context.Context, field grap
 	return ec.marshalNID2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Investor_investorID(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Investor_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Investor",
 		Field:      field,
@@ -386,8 +416,8 @@ func (ec *executionContext) fieldContext_Investor_investorID(ctx context.Context
 	return fc, nil
 }
 
-func (ec *executionContext) _Investor_loginAccount(ctx context.Context, field graphql.CollectedField, obj *model.Investor) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Investor_loginAccount(ctx, field)
+func (ec *executionContext) _Investor_username(ctx context.Context, field graphql.CollectedField, obj *model.Investor) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Investor_username(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -400,7 +430,7 @@ func (ec *executionContext) _Investor_loginAccount(ctx context.Context, field gr
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.LoginAccount, nil
+		return obj.Username, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -417,7 +447,7 @@ func (ec *executionContext) _Investor_loginAccount(ctx context.Context, field gr
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Investor_loginAccount(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Investor_username(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Investor",
 		Field:      field,
@@ -513,10 +543,10 @@ func (ec *executionContext) fieldContext_Mutation_createInvestor(ctx context.Con
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "investorID":
-				return ec.fieldContext_Investor_investorID(ctx, field)
-			case "loginAccount":
-				return ec.fieldContext_Investor_loginAccount(ctx, field)
+			case "id":
+				return ec.fieldContext_Investor_id(ctx, field)
+			case "username":
+				return ec.fieldContext_Investor_username(ctx, field)
 			case "password":
 				return ec.fieldContext_Investor_password(ctx, field)
 			}
@@ -537,8 +567,8 @@ func (ec *executionContext) fieldContext_Mutation_createInvestor(ctx context.Con
 	return fc, nil
 }
 
-func (ec *executionContext) _Query_Investors(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Query_Investors(ctx, field)
+func (ec *executionContext) _Mutation_login(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_login(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -551,7 +581,62 @@ func (ec *executionContext) _Query_Investors(ctx context.Context, field graphql.
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Investors(rctx, fc.Args["queryParams"].(model.QueryInvestorsParams))
+		return ec.resolvers.Mutation().Login(rctx, fc.Args["input"].(model.LoginInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_login(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_login_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_investors(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_investors(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().Investors(rctx, fc.Args["input"].(model.QueryInvestorsInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -568,7 +653,7 @@ func (ec *executionContext) _Query_Investors(ctx context.Context, field graphql.
 	return ec.marshalNInvestor2ᚕᚖapiserverᚋgraphqlᚋmodelᚐInvestorᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Query_Investors(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Query_investors(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Query",
 		Field:      field,
@@ -576,10 +661,10 @@ func (ec *executionContext) fieldContext_Query_Investors(ctx context.Context, fi
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "investorID":
-				return ec.fieldContext_Investor_investorID(ctx, field)
-			case "loginAccount":
-				return ec.fieldContext_Investor_loginAccount(ctx, field)
+			case "id":
+				return ec.fieldContext_Investor_id(ctx, field)
+			case "username":
+				return ec.fieldContext_Investor_username(ctx, field)
 			case "password":
 				return ec.fieldContext_Investor_password(ctx, field)
 			}
@@ -593,7 +678,7 @@ func (ec *executionContext) fieldContext_Query_Investors(ctx context.Context, fi
 		}
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Query_Investors_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+	if fc.Args, err = ec.field_Query_investors_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -2502,27 +2587,27 @@ func (ec *executionContext) fieldContext___Type_specifiedByURL(ctx context.Conte
 
 // region    **************************** input.gotpl *****************************
 
-func (ec *executionContext) unmarshalInputcreateInvestorInput(ctx context.Context, obj interface{}) (model.CreateInvestorInput, error) {
+func (ec *executionContext) unmarshalInputCreateInvestorInput(ctx context.Context, obj interface{}) (model.CreateInvestorInput, error) {
 	var it model.CreateInvestorInput
 	asMap := map[string]interface{}{}
 	for k, v := range obj.(map[string]interface{}) {
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"loginAccount", "password"}
+	fieldsInOrder := [...]string{"username", "password"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
-		case "loginAccount":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("loginAccount"))
+		case "username":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("username"))
 			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.LoginAccount = data
+			it.Username = data
 		case "password":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("password"))
 			data, err := ec.unmarshalNString2string(ctx, v)
@@ -2536,34 +2621,68 @@ func (ec *executionContext) unmarshalInputcreateInvestorInput(ctx context.Contex
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputqueryInvestorsParams(ctx context.Context, obj interface{}) (model.QueryInvestorsParams, error) {
-	var it model.QueryInvestorsParams
+func (ec *executionContext) unmarshalInputLoginInput(ctx context.Context, obj interface{}) (model.LoginInput, error) {
+	var it model.LoginInput
 	asMap := map[string]interface{}{}
 	for k, v := range obj.(map[string]interface{}) {
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"investorIDs", "loginAccounts", "pageSize", "page"}
+	fieldsInOrder := [...]string{"username", "password"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
-		case "investorIDs":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("investorIDs"))
+		case "username":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("username"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Username = data
+		case "password":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("password"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Password = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputQueryInvestorsInput(ctx context.Context, obj interface{}) (model.QueryInvestorsInput, error) {
+	var it model.QueryInvestorsInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"ids", "usernames", "pageSize", "page"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "ids":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("ids"))
 			data, err := ec.unmarshalNID2ᚕstringᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.InvestorIDs = data
-		case "loginAccounts":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("loginAccounts"))
+			it.Ids = data
+		case "usernames":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("usernames"))
 			data, err := ec.unmarshalNString2ᚕstringᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.LoginAccounts = data
+			it.Usernames = data
 		case "pageSize":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pageSize"))
 			data, err := ec.unmarshalNInt2int(ctx, v)
@@ -2603,13 +2722,13 @@ func (ec *executionContext) _Investor(ctx context.Context, sel ast.SelectionSet,
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Investor")
-		case "investorID":
-			out.Values[i] = ec._Investor_investorID(ctx, field, obj)
+		case "id":
+			out.Values[i] = ec._Investor_id(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
-		case "loginAccount":
-			out.Values[i] = ec._Investor_loginAccount(ctx, field, obj)
+		case "username":
+			out.Values[i] = ec._Investor_username(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
@@ -2667,6 +2786,13 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		case "login":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_login(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -2709,7 +2835,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Query")
-		case "Investors":
+		case "investors":
 			field := field
 
 			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
@@ -2718,7 +2844,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_Investors(ctx, field)
+				res = ec._Query_investors(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&fs.Invalids, 1)
 				}
@@ -3103,6 +3229,11 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
+func (ec *executionContext) unmarshalNCreateInvestorInput2apiserverᚋgraphqlᚋmodelᚐCreateInvestorInput(ctx context.Context, v interface{}) (model.CreateInvestorInput, error) {
+	res, err := ec.unmarshalInputCreateInvestorInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNID2string(ctx context.Context, v interface{}) (string, error) {
 	res, err := graphql.UnmarshalID(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -3221,6 +3352,16 @@ func (ec *executionContext) marshalNInvestor2ᚖapiserverᚋgraphqlᚋmodelᚐIn
 		return graphql.Null
 	}
 	return ec._Investor(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNLoginInput2apiserverᚋgraphqlᚋmodelᚐLoginInput(ctx context.Context, v interface{}) (model.LoginInput, error) {
+	res, err := ec.unmarshalInputLoginInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNQueryInvestorsInput2apiserverᚋgraphqlᚋmodelᚐQueryInvestorsInput(ctx context.Context, v interface{}) (model.QueryInvestorsInput, error) {
+	res, err := ec.unmarshalInputQueryInvestorsInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalNString2string(ctx context.Context, v interface{}) (string, error) {
@@ -3521,16 +3662,6 @@ func (ec *executionContext) marshalN__TypeKind2string(ctx context.Context, sel a
 		}
 	}
 	return res
-}
-
-func (ec *executionContext) unmarshalNcreateInvestorInput2apiserverᚋgraphqlᚋmodelᚐCreateInvestorInput(ctx context.Context, v interface{}) (model.CreateInvestorInput, error) {
-	res, err := ec.unmarshalInputcreateInvestorInput(ctx, v)
-	return res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) unmarshalNqueryInvestorsParams2apiserverᚋgraphqlᚋmodelᚐQueryInvestorsParams(ctx context.Context, v interface{}) (model.QueryInvestorsParams, error) {
-	res, err := ec.unmarshalInputqueryInvestorsParams(ctx, v)
-	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalOBoolean2bool(ctx context.Context, v interface{}) (bool, error) {

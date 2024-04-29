@@ -7,19 +7,19 @@ service InvestorService {
 }
 
 message Investor {
-  string investorID = 1;
-  string loginAccount = 2;
+  string id = 1;
+  string username = 2;
   string password = 3;
 }
 
 message CreateInvestorInput {
-  string loginAccount = 1;
+  string username = 1;
   string password = 2;
 }
 
 message QueryInvestorsParams {
-  repeated string investorIDs = 1;
-  repeated string loginAccounts = 2;
+  repeated string id = 1;
+  repeated string username = 2;
   uint32 pageSize = 3;
   uint32 page = 4;
 }

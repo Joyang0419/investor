@@ -2,10 +2,20 @@
 
 package model
 
+type CreateInvestorInput struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
 type Investor struct {
-	InvestorID   string `json:"investorID"`
-	LoginAccount string `json:"loginAccount"`
-	Password     string `json:"password"`
+	ID       string `json:"id"`
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
+type LoginInput struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
 }
 
 type Mutation struct {
@@ -14,14 +24,9 @@ type Mutation struct {
 type Query struct {
 }
 
-type CreateInvestorInput struct {
-	LoginAccount string `json:"loginAccount"`
-	Password     string `json:"password"`
-}
-
-type QueryInvestorsParams struct {
-	InvestorIDs   []string `json:"investorIDs"`
-	LoginAccounts []string `json:"loginAccounts"`
-	PageSize      int      `json:"pageSize"`
-	Page          int      `json:"page"`
+type QueryInvestorsInput struct {
+	Ids       []string `json:"ids"`
+	Usernames []string `json:"usernames"`
+	PageSize  int      `json:"pageSize"`
+	Page      int      `json:"page"`
 }

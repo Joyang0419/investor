@@ -21,17 +21,19 @@ var serverCmd = &cobra.Command{
 	Run:   runServerCmd,
 }
 
+// TODO viper to get secret and port
+var secret = []byte("ejkorjqwiejriwejri")
+var port = ":8080"
+
 func init() {
 	rootCmd.AddCommand(serverCmd)
 }
 
-// todo: graceful shutdown: https://learnku.com/docs/gin-gonic/1.5/examples-graceful-restart-or-stop/6173
-
+// TODO graceful shutdown: https://learnku.com/docs/gin-gonic/1.5/examples-graceful-restart-or-stop/6173
 func runServerCmd(_ *cobra.Command, _ []string) {
-	// TODO secretkey 變字串
 	jwtEncryption := encryption.NewJWTEncryption[middleware.TokenInfo](encryption.JWTRequirements{
-		SecretKey:     nil,
-		SigningMethod: nil,
+		SecretKey:     secret,
+		SigningMethod: encryption.JWTSigningMethodHS256,
 	})
 
 	r := router.NewGinRouter(
@@ -43,10 +45,9 @@ func runServerCmd(_ *cobra.Command, _ []string) {
 		jwtEncryption,
 	)
 
-	// 啟動服務
-	// todo viper 環境變數 :8080
-	if err := r.Run(":8080"); err != nil {
+	if err := r.Run(port); err != nil {
 		log.Fatalf("[runServerCmd]r.Run err: %v", err)
 	}
+
 	log.Print("[runServerCmd]success on port: 8080")
 }

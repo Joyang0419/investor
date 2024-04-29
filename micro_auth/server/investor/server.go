@@ -38,8 +38,8 @@ func (s *Server) GetInvestors(ctx context.Context, params *micro_auth.QueryInves
 		ctx,
 		s.timeout,
 		investor2.GetInvestorsOptFilter{
-			InvestorIDs:   params.InvestorIDs,
-			LoginAccounts: params.LoginAccounts,
+			InvestorIDs:   params.Id,
+			LoginAccounts: params.Username,
 			Page:          params.Page,
 			PageSize:      params.PageSize,
 		},
@@ -51,9 +51,9 @@ func (s *Server) GetInvestors(ctx context.Context, params *micro_auth.QueryInves
 	var investorsResponse micro_auth.InvestorsResponse
 	for idx := range investors {
 		investorsResponse.Investors = append(investorsResponse.Investors, &micro_auth.Investor{
-			InvestorID:   investors[idx].InvestorID,
-			LoginAccount: investors[idx].LoginAccount,
-			Password:     investors[idx].Password,
+			Id:       investors[idx].InvestorID,
+			Username: investors[idx].LoginAccount,
+			Password: investors[idx].Password,
 		})
 	}
 
@@ -63,11 +63,11 @@ func (s *Server) GetInvestors(ctx context.Context, params *micro_auth.QueryInves
 func (s *Server) CreateInvestor(ctx context.Context, input *micro_auth.CreateInvestorInput) (*micro_auth.Investor, error) {
 	readyToCreate := []investor.Schema{
 		{
-			LoginAccount: input.LoginAccount,
+			LoginAccount: input.Username,
 			Password:     input.Password,
 		},
 	}
-	isDuplicate, err := s.checkLoginAccountDuplicate(ctx, input.LoginAccount)
+	isDuplicate, err := s.checkLoginAccountDuplicate(ctx, input.Username)
 	if errorx.CheckErrorExist(err) {
 		return nil, fmt.Errorf("[Server][CreateInvestor]CheckLoginAccountDuplicate err: %w", err)
 	}
@@ -79,9 +79,10 @@ func (s *Server) CreateInvestor(ctx context.Context, input *micro_auth.CreateInv
 	if errorx.CheckErrorExist(err) {
 		return nil, fmt.Errorf("[Server][CreateInvestor]InsertMany err: %w", err)
 	}
-	if slicex.CheckLengthFitExpected(insertIDs.InsertedIDs, 1) {
-		return nil, fmt.Errorf("[Server][CreateInvestor]InsertMany length err")
-	}
+
+	//if slicex.CheckLengthFitExpected[](insertIDs.InsertedIDs, 1) {
+	//	return nil, fmt.Errorf("[Server][CreateInvestor]InsertMany length err")
+	//}
 
 	typeAsserted, typeAssertOk := insertIDs.InsertedIDs[0].(primitive.ObjectID)
 	if !typeAssertOk {
@@ -89,9 +90,9 @@ func (s *Server) CreateInvestor(ctx context.Context, input *micro_auth.CreateInv
 	}
 
 	return &micro_auth.Investor{
-		InvestorID:   typeAsserted.Hex(),
-		LoginAccount: input.LoginAccount,
-		Password:     input.Password,
+		Id:       typeAsserted.Hex(),
+		Username: input.Username,
+		Password: input.Password,
 	}, nil
 }
 

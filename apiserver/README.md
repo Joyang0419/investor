@@ -18,16 +18,16 @@
 # TODO example, 方便先熟悉GraphQL, 之後準備刪除, 找一款好用的GraphQL client
 ```graphql 
 query {
-  Investors(
-    queryParams: {
-      investorIDs: [], 
-      loginAccounts: [], 
+  investors(
+    input: {
+      id: [], 
+      username: [], 
       pageSize: 10, 
       page: 1
     }
   ) {
-    investorID
-    loginAccount
+    id
+    username
   }
 }
 
@@ -37,13 +37,13 @@ query {
 mutation {
   createInvestor(
     input: {
-      loginAccount: "Hello", 
+      username: "eewrkokggg", 
       password: "qq1234",
     }
   	) 
   {
-    investorID
-    loginAccount
+    id
+    username
     password
   }
 }

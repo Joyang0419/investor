@@ -2,30 +2,12 @@ package router
 
 import (
 	"apiserver/graphql"
+	"apiserver/handler"
 	"apiserver/middleware"
 	"tools/encryption"
 
-	"github.com/99designs/gqlgen/graphql/handler"
-	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/gin-gonic/gin"
 )
-
-func graphqlHandler(resolver graphql.ResolverRoot) gin.HandlerFunc {
-	h := handler.NewDefaultServer(graphql.NewExecutableSchema(
-		graphql.Config{Resolvers: resolver}))
-
-	return func(c *gin.Context) {
-		h.ServeHTTP(c.Writer, c.Request)
-	}
-}
-
-func playgroundHandler() gin.HandlerFunc {
-	h := playground.Handler("GraphQL", "/query")
-
-	return func(c *gin.Context) {
-		h.ServeHTTP(c.Writer, c.Request)
-	}
-}
 
 func NewGinRouter(
 	resolver graphql.ResolverRoot,
@@ -38,12 +20,12 @@ func NewGinRouter(
 		router.Use(middlewares[idx])
 	}
 
-	// 加入JWT middleware
+	// TODO 要分別針對 Schema 做權限控管
 	router.POST("/query",
-		//middleware.JWTMiddleware(jwtEncryption), // TODO 要分別針對 Schema 做權限控管
-		graphqlHandler(resolver),
+		//middleware.JWT(jwtEncryption),
+		handler.GraphqlHandler(resolver),
 	)
-	router.GET("/", playgroundHandler())
+	router.GET("/", handler.PlayGroundHandler())
 
 	return router
 }

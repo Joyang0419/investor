@@ -6,6 +6,7 @@ import (
 
 // implement IHash with bcryptHash
 type bcryptHash struct {
+	// Cost 决定了哈希函数的复杂性，值越大，哈希函数的计算就越复杂，生成哈希值所需的时间就越长。
 	Cost int
 }
 

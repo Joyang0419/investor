@@ -1,13 +1,14 @@
 package handler
 
 import (
-	"apiserver/graphql"
-
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/gin-gonic/gin"
+
+	"apiserver/graphql"
 )
 
+// TODO filename example,go 該改了吧
 func GraphqlHandler(resolver graphql.ResolverRoot) gin.HandlerFunc {
 	h := handler.NewDefaultServer(graphql.NewExecutableSchema(
 		graphql.Config{Resolvers: resolver}))

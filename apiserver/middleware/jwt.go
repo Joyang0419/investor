@@ -4,7 +4,7 @@ import (
 	"context"
 	"net/http"
 
-	"definition/api_response"
+	"definition/response"
 
 	"github.com/gin-gonic/gin"
 
@@ -36,7 +36,7 @@ func JWT(
 			logger.Error("Authorization header does not start with 'Bearer '")
 			c.AbortWithStatusJSON(
 				http.StatusUnauthorized,
-				api_response.SetAPIFormatResponse("Invalid token", api_response.ClientUnauthorized, nil),
+				response.New("Invalid token", response.ClientUnauthorized, nil),
 			)
 			return
 		}
@@ -48,7 +48,7 @@ func JWT(
 			logger.Error("JWTMiddleware Token is empty")
 			c.AbortWithStatusJSON(
 				http.StatusUnauthorized,
-				api_response.SetAPIFormatResponse("Invalid token", api_response.ClientUnauthorized, nil),
+				response.New("Invalid token", response.ClientUnauthorized, nil),
 			)
 			return
 		}
@@ -58,7 +58,7 @@ func JWT(
 			logger.Error("JWTMiddleware Decrypt error: %v", err)
 			c.AbortWithStatusJSON(
 				http.StatusUnauthorized,
-				api_response.SetAPIFormatResponse("Invalid token", api_response.ClientUnauthorized, nil),
+				response.New("Invalid token", response.ClientUnauthorized, nil),
 			)
 			return
 		}

@@ -3,8 +3,13 @@ type Query {
 }
 
 type Mutation {
-    createInvestor(input: CreateInvestorInput!): Investor!
+    createInvestor(input: CreateInvestorInput!):createInvestorPayload
     login(input: LoginInput!): String!
+}
+
+type createInvestorPayload {
+    investor: Investor
+    customCode: Int!
 }
 
 type Investor {
@@ -24,6 +29,7 @@ input LoginInput {
 }
 
 # TODO 驚嘆號的用意，補在README.md, 目前猜測是強型別
+# TODO 我驗證完了 ! 代表不允許Null readme 寫一寫
 input QueryInvestorsInput {
     ids: [ID!]!
     usernames: [String!]!

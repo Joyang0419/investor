@@ -6,6 +6,8 @@ import (
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	"protos/micro_auth"
 	investor2 "repo/mongodb/investor"
@@ -60,6 +62,7 @@ func (s *Server) GetInvestors(ctx context.Context, params *micro_auth.QueryInves
 	return &investorsResponse, nil
 }
 
+// TODO 調整, 要串接Google Oauth
 func (s *Server) CreateInvestor(ctx context.Context, input *micro_auth.CreateInvestorInput) (*micro_auth.Investor, error) {
 	readyToCreate := []investor.Schema{
 		{
@@ -71,18 +74,28 @@ func (s *Server) CreateInvestor(ctx context.Context, input *micro_auth.CreateInv
 	if errorx.CheckErrorExist(err) {
 		return nil, fmt.Errorf("[Server][CreateInvestor]CheckLoginAccountDuplicate err: %w", err)
 	}
+
+	// TODO 記得參考這裡, 這是GRPC 操作error 的基操
 	if isDuplicate {
-		return nil, fmt.Errorf("[Server][CreateInvestor]login account is duplicate")
+		return nil, status.Errorf(
+			codes.AlreadyExists,
+			"[Server][CreateInvestor] Investor with username '%s' already exists",
+			input.Username,
+		)
+
+		// TODO delete 我故意留著的， MicroErrOperationConflict 這也沒必要了
+		// TODO 下面全部都要修status.Errorf(
+		//return nil, errorx.New(
+		//	"[Server][CreateInvestor]",
+		//	error2.MicroErrOperationConflict,
+		//	"",
+		//)
 	}
 
 	insertIDs, err := s.command.InsertMany(ctx, s.timeout, readyToCreate)
 	if errorx.CheckErrorExist(err) {
 		return nil, fmt.Errorf("[Server][CreateInvestor]InsertMany err: %w", err)
 	}
-
-	//if slicex.CheckLengthFitExpected[](insertIDs.InsertedIDs, 1) {
-	//	return nil, fmt.Errorf("[Server][CreateInvestor]InsertMany length err")
-	//}
 
 	typeAsserted, typeAssertOk := insertIDs.InsertedIDs[0].(primitive.ObjectID)
 	if !typeAssertOk {

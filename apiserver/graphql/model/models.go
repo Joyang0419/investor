@@ -30,3 +30,8 @@ type QueryInvestorsInput struct {
 	PageSize  int      `json:"pageSize"`
 	Page      int      `json:"page"`
 }
+
+type CreateInvestorPayload struct {
+	Investor   *Investor `json:"investor,omitempty"`
+	CustomCode int       `json:"customCode"`
+}

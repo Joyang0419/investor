@@ -1,21 +1,21 @@
-package api_response
+package response
 
 import (
 	"fmt"
 )
 
-type APIFormatResponse struct {
+type Response struct {
 	Message    string `json:"message"`
 	CustomCode int    `json:"customCode"`
 	Data       any    `json:"data"`
 }
 
-func SetAPIFormatResponse(
+func New(
 	message string,
 	customCode TypeCustomCode,
 	data any,
-) APIFormatResponse {
-	return APIFormatResponse{
+) Response {
+	return Response{
 		Message:    fmt.Sprintf("%s: %s", getCustomCodeName(customCode), message),
 		CustomCode: customCode,
 		Data:       data,
@@ -27,15 +27,17 @@ type TypeCustomCode = int
 // 前三碼為 HTTP Status Code, 後四碼為自定義 Code
 // 新增後，要記得去下面customCodeNames 新增名稱
 const (
-	SuccessQuery TypeCustomCode = 2000001
+	Success TypeCustomCode = 2000000
 
-	ClientUnauthorized = 4010001
+	ClientUnauthorized = 4010000
+	// ClientConflict 資源已存在
+	ClientConflict = 4090000
 
-	ServerInternalError = 5000001
+	ServerInternalError = 5000000
 )
 
 var customCodeNames = map[TypeCustomCode]string{
-	SuccessQuery: "SuccessQuery",
+	Success: "Success",
 
 	ClientUnauthorized: "ClientUnauthorized",
 

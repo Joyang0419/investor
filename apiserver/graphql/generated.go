@@ -61,10 +61,15 @@ type ComplexityRoot struct {
 	Query struct {
 		Investors func(childComplexity int, input model.QueryInvestorsInput) int
 	}
+
+	CreateInvestorPayload struct {
+		CustomCode func(childComplexity int) int
+		Investor   func(childComplexity int) int
+	}
 }
 
 type MutationResolver interface {
-	CreateInvestor(ctx context.Context, input model.CreateInvestorInput) (*model.Investor, error)
+	CreateInvestor(ctx context.Context, input model.CreateInvestorInput) (*model.CreateInvestorPayload, error)
 	Login(ctx context.Context, input model.LoginInput) (string, error)
 }
 type QueryResolver interface {
@@ -146,6 +151,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.Investors(childComplexity, args["input"].(model.QueryInvestorsInput)), true
+
+	case "createInvestorPayload.customCode":
+		if e.complexity.CreateInvestorPayload.CustomCode == nil {
+			break
+		}
+
+		return e.complexity.CreateInvestorPayload.CustomCode(childComplexity), true
+
+	case "createInvestorPayload.investor":
+		if e.complexity.CreateInvestorPayload.Investor == nil {
+			break
+		}
+
+		return e.complexity.CreateInvestorPayload.Investor(childComplexity), true
 
 	}
 	return 0, false
@@ -525,14 +544,11 @@ func (ec *executionContext) _Mutation_createInvestor(ctx context.Context, field 
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.Investor)
+	res := resTmp.(*model.CreateInvestorPayload)
 	fc.Result = res
-	return ec.marshalNInvestor2ᚖapiserverᚋgraphqlᚋmodelᚐInvestor(ctx, field.Selections, res)
+	return ec.marshalOcreateInvestorPayload2ᚖapiserverᚋgraphqlᚋmodelᚐCreateInvestorPayload(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_createInvestor(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -543,14 +559,12 @@ func (ec *executionContext) fieldContext_Mutation_createInvestor(ctx context.Con
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "id":
-				return ec.fieldContext_Investor_id(ctx, field)
-			case "username":
-				return ec.fieldContext_Investor_username(ctx, field)
-			case "password":
-				return ec.fieldContext_Investor_password(ctx, field)
+			case "investor":
+				return ec.fieldContext_createInvestorPayload_investor(ctx, field)
+			case "customCode":
+				return ec.fieldContext_createInvestorPayload_customCode(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type Investor", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type createInvestorPayload", field.Name)
 		},
 	}
 	defer func() {
@@ -2583,6 +2597,99 @@ func (ec *executionContext) fieldContext___Type_specifiedByURL(ctx context.Conte
 	return fc, nil
 }
 
+func (ec *executionContext) _createInvestorPayload_investor(ctx context.Context, field graphql.CollectedField, obj *model.CreateInvestorPayload) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_createInvestorPayload_investor(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Investor, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.Investor)
+	fc.Result = res
+	return ec.marshalOInvestor2ᚖapiserverᚋgraphqlᚋmodelᚐInvestor(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_createInvestorPayload_investor(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "createInvestorPayload",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Investor_id(ctx, field)
+			case "username":
+				return ec.fieldContext_Investor_username(ctx, field)
+			case "password":
+				return ec.fieldContext_Investor_password(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Investor", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _createInvestorPayload_customCode(ctx context.Context, field graphql.CollectedField, obj *model.CreateInvestorPayload) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_createInvestorPayload_customCode(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CustomCode, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_createInvestorPayload_customCode(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "createInvestorPayload",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 // endregion **************************** field.gotpl *****************************
 
 // region    **************************** input.gotpl *****************************
@@ -2783,9 +2890,6 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_createInvestor(ctx, field)
 			})
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
 		case "login":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_login(ctx, field)
@@ -3210,6 +3314,47 @@ func (ec *executionContext) ___Type(ctx context.Context, sel ast.SelectionSet, o
 	return out
 }
 
+var createInvestorPayloadImplementors = []string{"createInvestorPayload"}
+
+func (ec *executionContext) _createInvestorPayload(ctx context.Context, sel ast.SelectionSet, obj *model.CreateInvestorPayload) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, createInvestorPayloadImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("createInvestorPayload")
+		case "investor":
+			out.Values[i] = ec._createInvestorPayload_investor(ctx, field, obj)
+		case "customCode":
+			out.Values[i] = ec._createInvestorPayload_customCode(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
 // endregion **************************** object.gotpl ****************************
 
 // region    ***************************** type.gotpl *****************************
@@ -3294,10 +3439,6 @@ func (ec *executionContext) marshalNInt2int(ctx context.Context, sel ast.Selecti
 		}
 	}
 	return res
-}
-
-func (ec *executionContext) marshalNInvestor2apiserverᚋgraphqlᚋmodelᚐInvestor(ctx context.Context, sel ast.SelectionSet, v model.Investor) graphql.Marshaler {
-	return ec._Investor(ctx, sel, &v)
 }
 
 func (ec *executionContext) marshalNInvestor2ᚕᚖapiserverᚋgraphqlᚋmodelᚐInvestorᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Investor) graphql.Marshaler {
@@ -3690,6 +3831,13 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 	return res
 }
 
+func (ec *executionContext) marshalOInvestor2ᚖapiserverᚋgraphqlᚋmodelᚐInvestor(ctx context.Context, sel ast.SelectionSet, v *model.Investor) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Investor(ctx, sel, v)
+}
+
 func (ec *executionContext) unmarshalOString2ᚖstring(ctx context.Context, v interface{}) (*string, error) {
 	if v == nil {
 		return nil, nil
@@ -3906,6 +4054,13 @@ func (ec *executionContext) marshalO__Type2ᚖgithubᚗcomᚋ99designsᚋgqlgen�
 		return graphql.Null
 	}
 	return ec.___Type(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOcreateInvestorPayload2ᚖapiserverᚋgraphqlᚋmodelᚐCreateInvestorPayload(ctx context.Context, sel ast.SelectionSet, v *model.CreateInvestorPayload) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._createInvestorPayload(ctx, sel, v)
 }
 
 // endregion ***************************** type.gotpl *****************************

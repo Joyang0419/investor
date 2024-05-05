@@ -14,11 +14,13 @@ require (
 	go.mongodb.org/mongo-driver v1.14.0
 	golang.org/x/crypto v0.22.0
 	golang.org/x/exp v0.0.0-20240416160154-fe59bbe5cc7f
+	golang.org/x/oauth2 v0.20.0
 	gorm.io/driver/mysql v1.5.5
 	gorm.io/gorm v1.25.8
 )
 
 require (
+	cloud.google.com/go/compute/metadata v0.3.0 // indirect
 	github.com/Azure/go-ansiterm v0.0.0-20230124172434-306776ec8161 // indirect
 	github.com/Microsoft/go-winio v0.6.1 // indirect
 	github.com/Nvveen/Gotty v0.0.0-20120604004816-cd527374f1e5 // indirect

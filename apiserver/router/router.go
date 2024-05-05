@@ -26,6 +26,7 @@ func NewGinRouter(
 		handler.GraphqlHandler(resolver),
 	)
 	router.GET("/", handler.PlayGroundHandler())
+	router.GET("/login", handler.Login())
 
 	return router
 }

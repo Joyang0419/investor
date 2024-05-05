@@ -7,12 +7,14 @@ import (
 	"tools/encryption"
 
 	"github.com/gin-gonic/gin"
+	"golang.org/x/oauth2"
 )
 
 func NewGinRouter(
 	resolver graphql.ResolverRoot,
 	middlewares []gin.HandlerFunc,
 	jwtEncryption *encryption.JWTEncryption[middleware.TokenInfo],
+	googleOauth *oauth2.Config,
 ) *gin.Engine {
 	router := gin.New()
 
@@ -26,7 +28,9 @@ func NewGinRouter(
 		handler.GraphqlHandler(resolver),
 	)
 	router.GET("/", handler.PlayGroundHandler())
-	router.GET("/login", handler.Login())
+	router.GET("/login", handler.Login(googleOauth))
+
+	router.GET("/auth/google/callback", handler.GoogleCallback(googleOauth))
 
 	return router
 }

@@ -1,13 +1,13 @@
 package cmd
 
 import (
-	"log"
-
 	graphql "apiserver/graphql/resolver"
 	"apiserver/middleware"
 	"apiserver/router"
+	"log"
 	"tools/encryption"
 	"tools/logger"
+	"tools/oauth"
 
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/cobra"
@@ -54,6 +54,13 @@ func runServerCmd(_ *cobra.Command, _ []string) {
 		SigningMethod: encryption.JWTSigningMethodHS256,
 	})
 
+	googleOauth := oauth.NewGoogleOauth(
+		viper.GetString("oauth2.google.client_id"),
+		viper.GetString("oauth2.google.client_secret"),
+		viper.GetString("oauth2.google.redirect_url"),
+		viper.GetStringSlice("oauth2.google.scopes"),
+	)
+
 	r := router.NewGinRouter(
 		graphql.NewResolver(
 			graphql.NewQueryResolver(),
@@ -61,6 +68,7 @@ func runServerCmd(_ *cobra.Command, _ []string) {
 		),
 		[]gin.HandlerFunc{logger.GinLogger()},
 		jwtEncryption,
+		googleOauth,
 	)
 
 	if err := r.Run(viper.GetString("server.port")); err != nil {

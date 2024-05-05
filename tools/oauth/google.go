@@ -5,14 +5,17 @@ import (
 	"golang.org/x/oauth2/google"
 )
 
-func CreateGoogleOauth(id, secret, redirectURL string, scopes []string) string {
-	c := oauth2.Config{
+const (
+	Code  = "code"
+	State = "state"
+)
+
+func NewGoogleOauth(id, secret, redirectURL string, scopes []string) *oauth2.Config {
+	return &oauth2.Config{
 		ClientID:     id,
 		ClientSecret: secret,
 		RedirectURL:  redirectURL,
 		Scopes:       scopes,
 		Endpoint:     google.Endpoint,
 	}
-
-	return c.AuthCodeURL("state")
 }

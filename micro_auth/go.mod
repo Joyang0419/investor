@@ -13,7 +13,7 @@ require (
 	definition v0.0.0
 	github.com/spf13/cobra v1.8.0
 	go.mongodb.org/mongo-driver v1.14.0
-	google.golang.org/grpc v1.62.1
+	google.golang.org/grpc v1.63.2
 	protos v0.0.0
 	repo v0.0.0
 	tools v0.0.0
@@ -31,7 +31,6 @@ require (
 	github.com/go-playground/validator/v10 v10.14.0 // indirect
 	github.com/go-sql-driver/mysql v1.7.0 // indirect
 	github.com/goccy/go-json v0.10.2 // indirect
-	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/golang/snappy v0.0.1 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect

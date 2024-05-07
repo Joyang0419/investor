@@ -18,62 +18,46 @@ import (
 	"tools/errorx"
 	"tools/logger"
 	"tools/slicex"
-
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 )
 
 // CreateInvestor is the resolver for the createInvestor field.
 func (r *mutationResolver) CreateInvestor(ctx context.Context, input model.CreateInvestorInput) (*model.CreateInvestorPayload, error) {
-	// TODO GRPC 封裝, Conn, Close
-	// TODO grpcConn 可以重複使用，所以應該用Dependency Injection 注入到Resolver, 先這樣，串起來後再改。
-	grpcConn, err := grpc.DialContext(
-		ctx,
-		"localhost:50052",
-		// TODO meaning 是什麼意思, Block 是等到Grpc 連線成功才返回, WithWithTransportCredentials ???
-		grpc.WithTransportCredentials(insecure.NewCredentials()),
-		grpc.WithBlock(),
-	)
-	if err != nil {
-		return nil, fmt.Errorf("[CreateInvestor]grpc.Dial err: %w", err)
+	conn, err := r.GrpcConnectionPools.MicroAuthGrpcConnPool.GetConnFromPool()
+	if errorx.CheckErrorExist(err) {
+		logger.Error("[Investors]r.GrpcConnectionPools.MicroAuthGrpcConnPool.GetConnFromPool err: %v", err)
+		return &model.CreateInvestorPayload{
+			CustomCode: response.ServerInternalError,
+		}, nil
 	}
-	defer func(grpcConn *grpc.ClientConn) {
-		if errClose := grpcConn.Close(); errClose != nil {
-			logger.Error("[CreateInvestor]grpcConn.Close err: %v", errClose)
-		}
-	}(grpcConn)
+	defer func() {
+		r.GrpcConnectionPools.MicroAuthGrpcConnPool.ReturnConnectionToPool(conn)
+	}()
 
-	investor, err := micro_auth.NewInvestorServiceClient(grpcConn).CreateInvestor(
+	service := micro_auth.NewInvestorServiceClient(
+		conn,
+	)
+	investor, err := service.CreateInvestor(
 		ctx,
 		&micro_auth.CreateInvestorInput{
 			Username: input.Username,
 			Password: input.Password,
 		},
 	)
-	if err != nil {
-		// TODO GRPC err 不能用golang errorIs 處理啊
-		//if errors.Is(err, error2.MicroErrOperationConflict) {
-		//	return &model.CreateInvestorPayload{
-		//		CustomCode: response.ClientConflict,
-		//	}, nil
-		//}
-		//return &model.CreateInvestorPayload{
-		//	CustomCode: response.ServerInternalError,
-		//}, nil
-
-		// TODO 封裝 把 err 丟進去 還出來 CustomCode
+	if errorx.CheckErrorExist(err) {
 		st, ok := status.FromError(err)
 		if !ok {
 			return &model.CreateInvestorPayload{
 				CustomCode: response.ServerInternalError,
 			}, nil
 		}
-		// 檢查是否為操作衝突錯誤
 		if st.Code() == codes.AlreadyExists {
 			return &model.CreateInvestorPayload{
 				CustomCode: response.ClientConflict,
 			}, nil
 		}
+		return &model.CreateInvestorPayload{
+			CustomCode: response.ServerInternalError,
+		}, nil
 	}
 
 	return &model.CreateInvestorPayload{
@@ -93,27 +77,13 @@ func (r *mutationResolver) Login(ctx context.Context, input model.LoginInput) (s
 
 // Investors is the resolver for the Investors field.
 func (r *queryResolver) Investors(ctx context.Context, input model.QueryInvestorsInput) ([]*model.Investor, error) {
-	// TODO independcy injection groc conn
-	// TODO GRPC 封裝, Conn, Close
-	// TODO grpcConn 可以重複使用，所以應該用Dependcy Injection 注入到Resolver, 先這樣，串起來後再改。
-	grpcConn, err := grpc.DialContext(
-		ctx,
-		"localhost:50052",
-		// TODO meaning 是什麼意思, Block 是等到Grpc 連線成功才返回, WithWithTransportCredentials ???
-		grpc.WithTransportCredentials(insecure.NewCredentials()),
-		grpc.WithBlock(),
-	)
-	// TODO grpc connect Err 定義
-	if err != nil {
-		return nil, fmt.Errorf("[CreateInvestor]grpc.Dial err: %w", err)
+	conn, err := r.GrpcConnectionPools.MicroAuthGrpcConnPool.GetConnFromPool()
+	if errorx.CheckErrorExist(err) {
+		return nil, fmt.Errorf("[Investors]r.GrpcConnectionPools.MicroAuthGrpcConnPool.GetConnFromPool err: %w", err)
 	}
-	defer func(grpcConn *grpc.ClientConn) {
-		if errClose := grpcConn.Close(); errClose != nil {
-			logger.Error("[CreateInvestor]grpcConn.Close err: %v", errClose)
-		}
-	}(grpcConn)
-
-	service := micro_auth.NewInvestorServiceClient(grpcConn)
+	service := micro_auth.NewInvestorServiceClient(
+		conn,
+	)
 	grpcResponse, err := service.GetInvestors(
 		ctx,
 		&micro_auth.QueryInvestorsParams{
@@ -127,8 +97,6 @@ func (r *queryResolver) Investors(ctx context.Context, input model.QueryInvestor
 		return nil, fmt.Errorf("[Investors]service.GetInvestors err: %w", err)
 	}
 
-	// TODO 這邊想一下，目前遇到的困難是 Grpc 的 Response 與 GQL 的 Response 不一樣，所以要轉換,
-	// TODO 要做到 GRPC response, 就是這個api 的 Response,
 	gqlInvestors := make([]*model.Investor, 0, slicex.GetLength(grpcResponse.Investors))
 	for idx := range grpcResponse.Investors {
 		gqlInvestors = append(gqlInvestors,
@@ -144,10 +112,26 @@ func (r *queryResolver) Investors(ctx context.Context, input model.QueryInvestor
 }
 
 // Mutation returns graphql1.MutationResolver implementation.
-func (r *Resolver) Mutation() graphql1.MutationResolver { return &mutationResolver{r} }
+func (r *Resolver) Mutation() graphql1.MutationResolver {
+	return &mutationResolver{
+		Resolver:            r,
+		GrpcConnectionPools: r.GrpcConnectionPools,
+	}
+}
 
 // Query returns graphql1.QueryResolver implementation.
-func (r *Resolver) Query() graphql1.QueryResolver { return &queryResolver{r} }
+func (r *Resolver) Query() graphql1.QueryResolver {
+	return &queryResolver{
+		Resolver:            r,
+		GrpcConnectionPools: r.GrpcConnectionPools,
+	}
+}
 
-type mutationResolver struct{ *Resolver }
-type queryResolver struct{ *Resolver }
+type mutationResolver struct {
+	GrpcConnectionPools *GrpcConnectionPools
+	*Resolver
+}
+type queryResolver struct {
+	GrpcConnectionPools *GrpcConnectionPools
+	*Resolver
+}

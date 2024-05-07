@@ -3,10 +3,15 @@ package cmd
 import (
 	"log"
 
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
+
 	graphql "apiserver/graphql/resolver"
 	"apiserver/middleware"
 	"apiserver/router"
+	"definition/micro_port"
 	"tools/encryption"
+	"tools/grpcx"
 	"tools/logger"
 
 	"github.com/gin-gonic/gin"
@@ -24,15 +29,18 @@ var serverCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(serverCmd)
 
+	// TODO config dir
 	// viper get config from env.yaml
 	viper.SetConfigName("env")
 	viper.SetConfigType("yaml")
 	viper.AddConfigPath(".")
 
 	// load env.yaml by viper
-	if err := viper.ReadInConfig(); err != nil {
-		log.Fatalf("error reading config file, %s", err)
-	}
+	// TODO 寫一下readme, 我不知道env 要放哪，也懶得找。建議放在跟config 一樣的位置, 可以學一下 env.template.yaml
+	// TODO 加入makefile, make RunApiServer時，先自動複製 env.template.yaml 到 env.yaml
+	//if err := viper.ReadInConfig(); err != nil {
+	//	log.Fatalf("error reading config file, %s", err)
+	//}
 
 	// default value
 	{
@@ -48,16 +56,31 @@ func init() {
 }
 
 // TODO graceful shutdown: https://learnku.com/docs/gin-gonic/1.5/examples-graceful-restart-or-stop/6173
-func runServerCmd(_ *cobra.Command, _ []string) {
+func runServerCmd(cmd *cobra.Command, _ []string) {
 	jwtEncryption := encryption.NewJWTEncryption[middleware.TokenInfo](encryption.JWTRequirements{
 		SecretKey:     []byte(viper.GetString("jwt.secret")),
 		SigningMethod: encryption.JWTSigningMethodHS256,
 	})
 
+	// grpc connection pool init
+	microAuthGrpcConnPool := grpcx.NewGrpcConnectionPool(
+		cmd.Context(),
+		micro_port.GetGrpcAddress("localhost", micro_port.MicroAuthPort), // TODO domain viper
+		10, // TODO viper
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	)
+	defer func() {
+		microAuthGrpcConnPool.CloseAllConnectionsOfPool()
+	}()
+
+	// gin router init
 	r := router.NewGinRouter(
 		graphql.NewResolver(
 			graphql.NewQueryResolver(),
 			graphql.NewMutationResolver(),
+			graphql.NewGrpcConnectionPools(
+				microAuthGrpcConnPool,
+			),
 		),
 		[]gin.HandlerFunc{logger.GinLogger()},
 		jwtEncryption,

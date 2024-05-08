@@ -29,9 +29,6 @@ func (r *mutationResolver) CreateInvestor(ctx context.Context, input model.Creat
 			CustomCode: response.ServerInternalError,
 		}, nil
 	}
-	defer func() {
-		r.GrpcConnectionPools.MicroAuthGrpcConnPool.ReturnConnectionToPool(conn)
-	}()
 
 	service := micro_auth.NewInvestorServiceClient(
 		conn,

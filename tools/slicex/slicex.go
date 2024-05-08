@@ -18,3 +18,7 @@ func CheckLengthFitExpected[T any](s []T, expected int) bool {
 func GetLength[T any](s []T) int {
 	return len(s)
 }
+
+func CheckIdxInSlice[T any](s []T, idx int) bool {
+	return idx >= 0 && idx < len(s)
+}

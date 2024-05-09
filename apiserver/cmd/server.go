@@ -81,14 +81,6 @@ func runServerCmd(cmd *cobra.Command, _ []string) {
 		microAuthGrpcConnPool.CloseAllConnectionsOfPool()
 	}()
 
-	// gin router init
-	googleOauth := oauth.NewGoogleOauth(
-		viper.GetString("oauth2.google.client_id"),
-		viper.GetString("oauth2.google.client_secret"),
-		viper.GetString("oauth2.google.redirect_url"),
-		viper.GetStringSlice("oauth2.google.scopes"),
-	)
-
 	r := router.NewGinRouter(
 		graphql.NewResolver(
 			graphql.NewQueryResolver(),

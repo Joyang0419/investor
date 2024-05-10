@@ -18,6 +18,7 @@ func init() {
 	rootCmd.AddCommand(configCmd)
 }
 
+// TODO To Eric delete this Command, because unnecessary
 func runConfigCmd(_ *cobra.Command, _ []string) {
 	viper.SetConfigName("env")
 	viper.SetConfigType("yaml")

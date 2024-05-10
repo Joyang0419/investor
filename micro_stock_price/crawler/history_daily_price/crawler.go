@@ -118,7 +118,7 @@ func (c *Crawler) Crawl(crawlParam crawlParamType, timeout time.Duration, random
 	)
 
 	timex.SleepRandomSeconds(randomSleep.MinSec, randomSleep.MaxSec)
-	responseHttpRequest, err := request.HttpRequest[twseStockData](url, http.MethodGet, nil, timeout)
+	responseHttpRequest, err := request.HttpRequest[twseStockData](url, http.MethodGet, nil, timeout, nil, nil)
 	if err != nil {
 		logger.Error("[crawlTWSEDailyPrices]request.HttpRequest err: %v", err)
 		return response, fmt.Errorf("[crawlTWSEDailyPrices]request.HttpRequest err: %w", err)

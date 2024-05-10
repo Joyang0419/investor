@@ -1,18 +1,18 @@
 package router
 
 import (
-	"apiserver/graphql"
-	"apiserver/handler"
-	"apiserver/middleware"
-	"tools/encryption"
+	"golang.org/x/oauth2"
 
 	"github.com/gin-gonic/gin"
+
+	"apiserver/graphql"
+	"apiserver/handler"
 )
 
 func NewGinRouter(
 	resolver graphql.ResolverRoot,
 	middlewares []gin.HandlerFunc,
-	jwtEncryption *encryption.JWTEncryption[middleware.TokenInfo],
+	googleOauthConfig oauth2.Config,
 ) *gin.Engine {
 	router := gin.New()
 
@@ -20,12 +20,14 @@ func NewGinRouter(
 		router.Use(middlewares[idx])
 	}
 
-	// TODO 要分別針對 Schema 做權限控管
 	router.POST("/query",
 		//middleware.JWT(jwtEncryption),
 		handler.GraphqlHandler(resolver),
 	)
-	router.GET("/", handler.PlayGroundHandler())
+
+	// 尚未進到系統前，都使用Restful api(example: login, callback, ...)
+	router.GET("/auth/google/login", handler.GoogleOauthLoginHandler(googleOauthConfig))
+	router.GET("/auth/google/login/callback", handler.GoogleOauthCallbackHandler(googleOauthConfig))
 
 	return router
 }

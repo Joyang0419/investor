@@ -1,8 +1,7 @@
 package cmd
 
 import (
-	"log"
-
+	"github.com/gin-gonic/gin"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
@@ -13,8 +12,8 @@ import (
 	"tools/encryption"
 	"tools/grpcx"
 	"tools/logger"
+	"tools/oauthx"
 
-	"github.com/gin-gonic/gin"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -57,10 +56,12 @@ func init() {
 
 // TODO graceful shutdown: https://learnku.com/docs/gin-gonic/1.5/examples-graceful-restart-or-stop/6173
 func runServerCmd(cmd *cobra.Command, _ []string) {
+	// TODO 下一期JWT 驗證
 	jwtEncryption := encryption.NewJWTEncryption[middleware.TokenInfo](encryption.JWTRequirements{
 		SecretKey:     []byte(viper.GetString("jwt.secret")),
 		SigningMethod: encryption.JWTSigningMethodHS256,
 	})
+	_ = jwtEncryption
 
 	// grpc connection pool init
 	microAuthGrpcConnPool := grpcx.NewGrpcConnectionPool(
@@ -73,6 +74,17 @@ func runServerCmd(cmd *cobra.Command, _ []string) {
 		microAuthGrpcConnPool.CloseAllConnectionsOfPool()
 	}()
 
+	// google Oauth config
+	googleOauthConfig := oauthx.NewGoogleOauthConfig(
+		"651255568655-qn595kldgqldugkcku5bij73cqos7kkp.apps.googleusercontent.com", // TODO viper
+		"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",                                      // TODO viper
+		"http://localhost:8080//auth/google/login/callback",                        // TODO domain 要可以拔出來, 也是Viper 注入
+		[]string{
+			oauthx.ScopeForUserEmail,
+			oauthx.ScopeForUserProfile,
+		},
+	)
+
 	// gin router init
 	r := router.NewGinRouter(
 		graphql.NewResolver(
@@ -83,12 +95,12 @@ func runServerCmd(cmd *cobra.Command, _ []string) {
 			),
 		),
 		[]gin.HandlerFunc{logger.GinLogger()},
-		jwtEncryption,
+		googleOauthConfig,
 	)
 
 	if err := r.Run(viper.GetString("server.port")); err != nil {
-		log.Fatalf("[runServerCmd]r.Run err: %v", err)
+		logger.Fatal("[runServerCmd]r.Run err: %v", err)
 	}
 
-	log.Print("[runServerCmd]success on port: 8080")
+	logger.Info("[runServerCmd]success on port: 8080")
 }

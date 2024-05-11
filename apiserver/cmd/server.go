@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"apiserver/conf"
 	"log"
 
 	"google.golang.org/grpc"
@@ -30,30 +31,7 @@ var serverCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(serverCmd)
 
-	// TODO config dir
-	// viper get config from env.yaml
-	viper.SetConfigName("env")
-	viper.SetConfigType("yaml")
-	viper.AddConfigPath(".")
-
-	// load env.yaml by viper
-	// TODO 寫一下readme, 我不知道env 要放哪，也懶得找。建議放在跟config 一樣的位置, 可以學一下 env.template.yaml
-	// TODO 加入makefile, make RunApiServer時，先自動複製 env.template.yaml 到 env.yaml
-	//if err := viper.ReadInConfig(); err != nil {
-	//	log.Fatalf("error reading config file, %s", err)
-	//}
-
-	// default value
-	{
-		viper.SetDefault("server.port", ":8080")
-
-		viper.SetDefault("jwt.secret", []byte(`kmkdmvqejmriqiwngijoqpw`))
-
-		viper.SetDefault("oauth2.google.client_id", "client_id")
-		viper.SetDefault("oauth2.google.client_secret", "client_secret")
-		viper.SetDefault("oauth2.google.redirect_url", "http://localhost:8080/auth/google/callback")
-		viper.SetDefault("oauth2.google.scopes", []string{})
-	}
+	conf.Init()
 }
 
 // TODO graceful shutdown: https://learnku.com/docs/gin-gonic/1.5/examples-graceful-restart-or-stop/6173
@@ -64,10 +42,10 @@ func runServerCmd(cmd *cobra.Command, _ []string) {
 	})
 
 	googleOauth := oauth.NewGoogleOauth(
-		viper.GetString("oauth2.google.client_id"),
-		viper.GetString("oauth2.google.client_secret"),
-		viper.GetString("oauth2.google.redirect_url"),
-		viper.GetStringSlice("oauth2.google.scopes"),
+		conf.Config.Oauth2.Google.ClientId,
+		conf.Config.Oauth2.Google.ClientSecret,
+		conf.Config.Oauth2.Google.RedirectUrl,
+		conf.Config.Oauth2.Google.Scopes,
 	)
 
 	// grpc connection pool init
@@ -94,7 +72,7 @@ func runServerCmd(cmd *cobra.Command, _ []string) {
 		googleOauth,
 	)
 
-	if err := r.Run(viper.GetString("server.port")); err != nil {
+	if err := r.Run(conf.Config.Port); err != nil {
 		log.Fatalf("[runServerCmd]r.Run err: %v", err)
 	}
 

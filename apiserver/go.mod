@@ -15,12 +15,14 @@ require (
 	github.com/spf13/cobra v1.8.0
 	github.com/spf13/viper v1.18.2
 	github.com/vektah/gqlparser/v2 v2.5.11
+	golang.org/x/oauth2 v0.20.0
 	google.golang.org/grpc v1.63.2
 	protos v0.0.0
 	tools v0.0.0-00010101000000-000000000000
 )
 
 require (
+	cloud.google.com/go/compute/metadata v0.3.0 // indirect
 	github.com/agnivade/levenshtein v1.1.1 // indirect
 	github.com/bytedance/sonic v1.11.3 // indirect
 	github.com/chenzhuoyu/base64x v0.0.0-20230717121745-296ad89f973d // indirect

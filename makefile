@@ -9,9 +9,12 @@ InstallGRPCPlugins:
 GenProtos:
 	protoc --go_out=. --go-grpc_out=. ./protos/*/*.proto
 
+CopyConfig:
+	cd apiserver && cp env.yaml.example env.yaml
+
 # 啟動ApiServer服務
 RunApiServer:
-	cd apiserver && go mod tidy && go run main.go server
+	cd apiserver && cp env.yaml.example env.yaml && go mod tidy && go run main.go server
 
 # 啟動micro_auth服務
 RunMicroAuth:

@@ -12,14 +12,14 @@ import (
 )
 
 /*
-NewGoogleOauthConfig creates a new oauth2.Config for Google OAuth2.
+NewGoogleOauth creates a new oauth2.Config for Google OAuth2.
 scopes: 訪問控制：授權服務器根據這些範圍來限制應用訪問用戶資料的範圍。只有用戶批准的範圍內的資料才可被應用訪問。
 example:
 https://www.googleapis.com/auth/userinfo.email：允許訪問用戶的郵件地址。
 https://www.googleapis.com/auth/userinfo.profile：允許訪問用戶的基本個人資料信息。
 https://www.googleapis.com/auth/drive：允許訪問和管理用戶的 Google 驅動器文件。
 */
-func NewGoogleOauthConfig(
+func NewGoogleOauth(
 	clientID string,
 	clientSecret string,
 	redirectURL string,

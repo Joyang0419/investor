@@ -7,7 +7,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 
 	"repo/mongodb"
-	"repo/mongodb/schema/investor"
+	"repo/mongodb/schema"
 	"tools/mapx"
 	"tools/mongodbx"
 	"tools/numberx"
@@ -48,8 +48,8 @@ func (filter *GetInvestorsOptFilter) GetFilter() map[string]interface{} {
 	return mapx.CombineMaps(readyToCombinedMaps...)
 }
 
-func (q *Query) GetInvestors(ctx context.Context, timeout time.Duration, OptFilter GetInvestorsOptFilter) ([]investor.Schema, error) {
-	return mongodbx.All[[]investor.Schema](
+func (q *Query) GetInvestors(ctx context.Context, timeout time.Duration, OptFilter GetInvestorsOptFilter) ([]schema.Investor, error) {
+	return mongodbx.All[[]schema.Investor](
 		ctx,
 		q.client,
 		timeout,

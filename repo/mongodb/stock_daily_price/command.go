@@ -7,7 +7,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 
 	"repo/mongodb"
-	"repo/mongodb/schema/stock_daily_price"
+	"repo/mongodb/schema"
 	"tools/mongodbx"
 )
 
@@ -22,7 +22,7 @@ func NewCommand(client *mongo.Client) *Command {
 func (cmd *Command) InsertMany(
 	ctx context.Context,
 	timeout time.Duration,
-	data []stock_daily_price.Schema,
+	data []schema.StockDailyPrice,
 ) (*mongo.InsertManyResult, error) {
 	return mongodbx.InsertMany(
 		ctx,

@@ -6,15 +6,15 @@ import (
 
 	"go.mongodb.org/mongo-driver/mongo"
 
-	"repo/mongodb/schema/investor"
+	"repo/mongodb/schema"
 )
 
 type ICommand interface {
-	InsertMany(ctx context.Context, timeout time.Duration, data []investor.Schema) (*mongo.InsertManyResult, error)
+	InsertMany(ctx context.Context, timeout time.Duration, data []schema.Investor) (*mongo.InsertManyResult, error)
 }
 
 type IQuery interface {
-	GetInvestors(ctx context.Context, timeout time.Duration, OptFilter GetInvestorsOptFilter) ([]investor.Schema, error)
+	GetInvestors(ctx context.Context, timeout time.Duration, OptFilter GetInvestorsOptFilter) ([]schema.Investor, error)
 }
 
 type GetInvestorsOptFilter struct {

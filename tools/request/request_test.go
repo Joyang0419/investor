@@ -66,7 +66,7 @@ func TestHttpRequest(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			var resp response
-			resp, err := HttpRequest[response](tt.url, tt.method, tt.headers, 10*time.Second, tt.allowedHttpStatusCodes...)
+			resp, err := HttpRequest[response](tt.url, tt.method, tt.headers, 10*time.Second, nil, nil, tt.allowedHttpStatusCodes...)
 
 			if tt.expectError {
 				assert.Error(t, err)

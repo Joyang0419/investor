@@ -24,6 +24,10 @@ RunMicroAuth:
 RunMicroStockPrice:
 	cd micro_stock_price && go mod tidy && go run main.go server
 
+# 啟動Scheduler服務
+RunScheduler:
+	cd scheduler && go mod tidy && go run main.go scheduler
+
 # 啟動dev/build檔的dev docker compose yaml
 UpDevInfra:
 	cd build/dev && docker-compose up -d

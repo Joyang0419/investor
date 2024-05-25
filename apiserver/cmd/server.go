@@ -1,8 +1,6 @@
 package cmd
 
 import (
-	"log"
-
 	"apiserver/conf"
 	"apiserver/handler"
 	oauthx "tools/oauth"
@@ -74,8 +72,8 @@ func runServerCmd(cmd *cobra.Command, _ []string) {
 	)
 
 	if err := r.Run(conf.Config.Port); err != nil {
-		log.Fatalf("[runServerCmd]r.Run err: %v", err)
+		logger.Fatal("[runServerCmd]r.Run err: %v", err)
 	}
 
-	log.Print("[runServerCmd]success on port: 8080")
+	logger.Info("[runServerCmd]success on port: 8080")
 }

@@ -13,6 +13,7 @@ import (
 	"micro_auth/server"
 	"protos/micro_auth"
 	investor2 "repo/mongodb/investor"
+	"tools/encryption"
 	"tools/infra_conn"
 	"tools/logger"
 )
@@ -60,6 +61,13 @@ func runServerCmd(_ *cobra.Command, _ []string) {
 			investor2.NewQuery(mongoDbConn),
 			investor2.NewCommand(mongoDbConn),
 			30*time.Second,
+			encryption.NewJWTEncryption[server.TokenInfo](
+				encryption.JWTRequirements{
+					SecretKey:      "kmkdmvqejmriqiwngijoqpw",
+					SigningMethod:  encryption.JWTSigningMethodHS256,
+					ExpireDuration: 1 * time.Hour,
+				},
+			),
 		),
 	)
 

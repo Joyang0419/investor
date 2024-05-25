@@ -22,6 +22,7 @@ func NewGinRouter(
 	}
 
 	router.POST("/query",
+		handler.AuthHandler.ValidateToken(),
 		handler.GraphqlHandler.HandleGraphql(),
 	)
 

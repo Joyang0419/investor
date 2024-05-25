@@ -4,15 +4,15 @@ import (
 	"strings"
 )
 
-func CheckEmptyStr(s string) bool {
+func IsEmptyStr(s string) bool {
 	return len(s) == 0
 }
 
-func CheckNotEmptyStr(s string) bool {
+func IsNotEmptyStr(s string) bool {
 	return len(s) != 0
 }
 
-func CheckHasPrefix(s, prefix string) bool {
+func IsHasPrefix(s, prefix string) bool {
 	return strings.HasPrefix(s, prefix)
 }
 

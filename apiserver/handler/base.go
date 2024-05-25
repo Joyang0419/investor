@@ -25,14 +25,19 @@ func ReturnSuccessResponse(
 
 // ClientSide
 
-func ReturnClientBadRequestResponse(
+func ClientBadRequestResponse(
 	c *gin.Context, data any, message ...string) {
 	returnResponse(c, http.StatusBadRequest, response.ClientBadRequest, data, message...)
 }
 
+func ClientUnauthorizedResponse(
+	c *gin.Context, data any, message ...string) {
+	returnResponse(c, http.StatusUnauthorized, response.ClientUnauthorized, data, message...)
+}
+
 // ServerSide
 
-func ReturnServerInternalErrorResponse(
+func ServerInternalErrorResponse(
 	c *gin.Context, data any, message ...string) {
 	returnResponse(c, http.StatusInternalServerError, response.ServerInternalError, data, message...)
 }

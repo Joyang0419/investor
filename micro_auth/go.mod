@@ -11,6 +11,7 @@ replace (
 
 require (
 	definition v0.0.0
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/spf13/cobra v1.8.0
 	google.golang.org/grpc v1.63.2
 	protos v0.0.0
@@ -39,6 +40,7 @@ require (
 	github.com/klauspost/cpuid/v2 v2.2.4 // indirect
 	github.com/leodido/go-urn v1.2.4 // indirect
 	github.com/mattn/go-isatty v0.0.19 // indirect
+	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/montanaflynn/stats v0.0.0-20171201202039-1bf9dbcd8cbe // indirect

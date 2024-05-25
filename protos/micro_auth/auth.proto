@@ -3,6 +3,17 @@ option go_package = "protos/micro_auth";
 
 service AuthService {
   rpc Login (LoginRequest) returns (LoginResponse);
+  rpc ValidateToken (ValidateTokenRequest) returns (ValidateTokenResponse);
+}
+
+message ValidateTokenRequest {
+  string token = 1;
+}
+
+message ValidateTokenResponse {
+  bool valid = 1;
+  string Email = 2;
+  string ID = 3;
 }
 
 message LoginRequest {
@@ -14,6 +25,7 @@ message LoginRequest {
   string FamilyName = 6;
   string Picture = 7;
   string Locale = 8;
+  uint64 LastLoginTimestamp = 9;
 }
 
 message LoginResponse {

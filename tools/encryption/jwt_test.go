@@ -10,7 +10,7 @@ import (
 func TestEncryptGeneratesValidJWT(t *testing.T) {
 	encrypt := NewJWTEncryption[jwt.MapClaims](
 		JWTRequirements{
-			SecretKey:     []byte("secret"),
+			SecretKey:     "secret",
 			SigningMethod: JWTSigningMethodHS256,
 		},
 	)
@@ -23,14 +23,15 @@ func TestEncryptGeneratesValidJWT(t *testing.T) {
 func TestDecryptParsesValidJWT(t *testing.T) {
 	encrypt := NewJWTEncryption[jwt.MapClaims](
 		JWTRequirements{
-			SecretKey:     []byte("secret"),
+			SecretKey:     "secret",
 			SigningMethod: jwt.SigningMethodHS256,
 		},
 	)
 	token, _ := encrypt.Encrypt(jwt.MapClaims{"foo": "bar"})
-	decrypted, err := encrypt.Decrypt(token)
+	valid, decrypted, err := encrypt.Decrypt(token)
 
 	assert.NoError(t, err)
+	assert.True(t, valid)
 	assert.Equal(t, "bar", decrypted["foo"])
 }
 
@@ -41,13 +42,14 @@ func TestCustomStructDecryptParsesValidJWT(t *testing.T) {
 
 	encrypt := NewJWTEncryption[CustomStruct](
 		JWTRequirements{
-			SecretKey:     []byte("secret"),
+			SecretKey:     "secret",
 			SigningMethod: jwt.SigningMethodHS256,
 		},
 	)
 	token, _ := encrypt.Encrypt(jwt.MapClaims{"foo": "bar"})
-	decrypted, err := encrypt.Decrypt(token)
+	valid, decrypted, err := encrypt.Decrypt(token)
 
 	assert.NoError(t, err)
+	assert.True(t, valid)
 	assert.Equal(t, "bar", decrypted.Foo)
 }

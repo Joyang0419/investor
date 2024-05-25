@@ -24,3 +24,8 @@ func SleepRandomSeconds(minSec, maxSec int) {
 	// 將秒轉換為時間持續量 Duration 並睡眠
 	time.Sleep(time.Duration(duration) * time.Second)
 }
+
+// GetCurrentTimestampSeconds returns Current Timestamp (10 digits)
+func GetCurrentTimestampSeconds() uint64 {
+	return uint64(time.Now().Unix())
+}

@@ -23,4 +23,4 @@
 - api server 只會有連線Grpc, 不會連線任何Infra(ex: DB, cache), 唯一的連線Infra, 就是Elasitcsearch, 寫入log
 
 # Others
-- graphQL GUI tool: Altair
+- graphQL GUI tool: Altair: https://altairgraphql.dev/#download

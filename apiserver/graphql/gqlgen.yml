@@ -1,10 +1,10 @@
 # Where are all the schema files located? globs are supported eg  src/**/*.graphqls
 schema:
-  - graphql/schema/*.graphql
+  - schema/*.graphql
 
 # Where should the generated server code go?
 exec:
-  filename: graphql/generated.go
+  filename: generated.go
   package: graphql
 
 # Enable Apollo federation support
@@ -14,7 +14,7 @@ exec:
 
 # Where should any generated models go?
 model:
-  filename: graphql/model/models.go
+  filename: model/models.go
   package: model
   # Optional: Pass in a path to a new gotpl template to use for generating the models
   # model_template: [your/path/model.gotpl]
@@ -23,7 +23,7 @@ model:
   # 現階段沒意義，產一個空的，等到之後要用在解開
 resolver:
   layout: follow-schema
-  dir: graphql/resolver
+  dir: resolver
   package: graphql
   filename_template: "{name}.resolver.go"
   # Optional: turn on to not generate template comments above resolvers

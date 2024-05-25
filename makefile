@@ -33,7 +33,7 @@ DownDevInfra:
 	cd build/dev && docker-compose down -v
 
 GenGraphQL:
-	cd apiserver && go run github.com/99designs/gqlgen generate
+	cd apiserver/graphql && go run github.com/99designs/gqlgen generate
 
 MigrateUpMySQL:
 	cd build/dev && docker-compose up -d flyway

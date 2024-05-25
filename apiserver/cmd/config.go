@@ -21,13 +21,12 @@ func init() {
 func runConfigCmd(_ *cobra.Command, _ []string) {
 	viper.SetConfigName("env")
 	viper.SetConfigType("yaml")
-	viper.AddConfigPath(".")
+	viper.AddConfigPath("./config")
 
 	err := viper.ReadInConfig()
 	if err != nil {
 		log.Fatal("read config error: ", err)
 	}
 
-	// TODO show all settings prettily
 	log.Println(viper.AllSettings())
 }

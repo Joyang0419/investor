@@ -8,7 +8,7 @@ import (
 	"definition/response"
 )
 
-func returnResponse(c *gin.Context, httpStatusCode int, customCode response.TypeCustomCode, data any, message ...string) {
+func resp(c *gin.Context, httpStatusCode int, customCode response.TypeCustomCode, data any, message ...string) {
 	c.JSON(httpStatusCode,
 		response.New(
 			customCode,
@@ -18,26 +18,26 @@ func returnResponse(c *gin.Context, httpStatusCode int, customCode response.Type
 	)
 }
 
-func ReturnSuccessResponse(
+func SuccessResponse(
 	c *gin.Context, data any, message ...string) {
-	returnResponse(c, http.StatusOK, response.Success, data, message...)
+	resp(c, http.StatusOK, response.Success, data, message...)
 }
 
 // ClientSide
 
 func ClientBadRequestResponse(
 	c *gin.Context, data any, message ...string) {
-	returnResponse(c, http.StatusBadRequest, response.ClientBadRequest, data, message...)
+	resp(c, http.StatusBadRequest, response.ClientBadRequest, data, message...)
 }
 
 func ClientUnauthorizedResponse(
 	c *gin.Context, data any, message ...string) {
-	returnResponse(c, http.StatusUnauthorized, response.ClientUnauthorized, data, message...)
+	resp(c, http.StatusUnauthorized, response.ClientUnauthorized, data, message...)
 }
 
 // ServerSide
 
 func ServerInternalErrorResponse(
 	c *gin.Context, data any, message ...string) {
-	returnResponse(c, http.StatusInternalServerError, response.ServerInternalError, data, message...)
+	resp(c, http.StatusInternalServerError, response.ServerInternalError, data, message...)
 }

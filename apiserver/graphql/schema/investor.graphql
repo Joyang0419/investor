@@ -1,38 +1,26 @@
-type Query {
-    investors(input: QueryInvestorsInput!): [Investor!]!
+# TODO 寫一下 interface 的用途
+interface BaseResponse {
+    code: Int!
+    message: String!
 }
+
+## TODO 下面之後, 先寫個範例的概念
+type Query {
+    echo(s: String!): QueryEchoOutput!
+}
+
+type QueryEchoOutput implements BaseResponse{
+    code: Int!
+    message: String!
+    Data: String!
+}
+
 
 type Mutation {
-    createInvestor(input: CreateInvestorInput!):createInvestorPayload
-    login(input: LoginInput!): String!
+    echo(s: String!): MutationEchoOutput!
 }
-
-type createInvestorPayload {
-    investor: Investor
-    customCode: Int!
-}
-
-type Investor {
-    id: ID!
-    username: String!
-    password: String!
-}
-
-input CreateInvestorInput {
-    username: String!
-    password: String!
-}
-
-input LoginInput {
-    username: String!
-    password: String!
-}
-
-# TODO 驚嘆號的用意，補在README.md, 目前猜測是強型別
-# TODO 我驗證完了 ! 代表不允許Null readme 寫一寫
-input QueryInvestorsInput {
-    ids: [ID!]!
-    usernames: [String!]!
-    pageSize: Int!
-    page: Int!
+type MutationEchoOutput implements BaseResponse{
+    code: Int!
+    message: String!
+    Data: String!
 }

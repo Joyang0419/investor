@@ -21,7 +21,7 @@ func init() {
 func runConfigCmd(_ *cobra.Command, _ []string) {
 	viper.SetConfigName("env")
 	viper.SetConfigType("yaml")
-	viper.AddConfigPath("./config")
+	viper.AddConfigPath("./conf")
 
 	err := viper.ReadInConfig()
 	if err != nil {

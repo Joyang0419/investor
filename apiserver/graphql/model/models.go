@@ -2,36 +2,34 @@
 
 package model
 
-type CreateInvestorInput struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
-}
-
-type Investor struct {
-	ID       string `json:"id"`
-	Username string `json:"username"`
-	Password string `json:"password"`
-}
-
-type LoginInput struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
+type BaseResponse interface {
+	IsBaseResponse()
+	GetCode() int
+	GetMessage() string
 }
 
 type Mutation struct {
 }
 
+type MutationEchoOutput struct {
+	Code    int    `json:"code"`
+	Message string `json:"message"`
+	Data    string `json:"Data"`
+}
+
+func (MutationEchoOutput) IsBaseResponse()         {}
+func (this MutationEchoOutput) GetCode() int       { return this.Code }
+func (this MutationEchoOutput) GetMessage() string { return this.Message }
+
 type Query struct {
 }
 
-type QueryInvestorsInput struct {
-	Ids       []string `json:"ids"`
-	Usernames []string `json:"usernames"`
-	PageSize  int      `json:"pageSize"`
-	Page      int      `json:"page"`
+type QueryEchoOutput struct {
+	Code    int    `json:"code"`
+	Message string `json:"message"`
+	Data    string `json:"Data"`
 }
 
-type CreateInvestorPayload struct {
-	Investor   *Investor `json:"investor,omitempty"`
-	CustomCode int       `json:"customCode"`
-}
+func (QueryEchoOutput) IsBaseResponse()         {}
+func (this QueryEchoOutput) GetCode() int       { return this.Code }
+func (this QueryEchoOutput) GetMessage() string { return this.Message }

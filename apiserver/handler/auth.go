@@ -83,7 +83,7 @@ func (h *AuthHandler) GoogleOauthCallbackHandler() gin.HandlerFunc {
 			return
 		}
 
-		ReturnSuccessResponse(ginCtx, gin.H{"token": grpcResp.Token})
+		SuccessResponse(ginCtx, gin.H{"token": grpcResp.Token})
 	}
 }
 

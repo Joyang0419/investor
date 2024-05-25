@@ -43,7 +43,7 @@ func NewGrpcConnectionPool(
 			serverAddr,
 			options...,
 		)
-		if errorx.CheckErrorExist(err) {
+		if errorx.IsErrorExist(err) {
 			pool.CloseAllConnectionsOfPool() // CloseAllConnectionsOfPool all previously opened connections
 			logger.Fatal("[GrpcConnectionPool] grpc.Dial err: %v", err)
 		}

@@ -4,10 +4,6 @@ import (
 	"golang.org/x/exp/constraints"
 )
 
-type TypeNumber interface {
-	constraints.Integer | constraints.Float
-}
-
-func CheckNotZero[numberType TypeNumber](number numberType) bool {
+func IsNotZero[numberType constraints.Float | constraints.Integer | constraints.Signed | constraints.Unsigned](number numberType) bool {
 	return number != numberType(0)
 }

@@ -26,11 +26,11 @@ func NewQuery(client *mongo.Client) *Query {
 
 func (filter *GetInvestorsOptFilter) GetFindOptions() []mongodbx.FindOption {
 	var findOptions []mongodbx.FindOption
-	if numberx.CheckNotZero(filter.Page) {
+	if numberx.IsNotZero(filter.Page) {
 		offset := (filter.Page - 1) * filter.PageSize
 		findOptions = append(findOptions, mongodbx.WithOffset(int64(offset)))
 	}
-	if numberx.CheckNotZero(filter.PageSize) {
+	if numberx.IsNotZero(filter.PageSize) {
 		findOptions = append(findOptions, mongodbx.WithLimit(int64(filter.PageSize)))
 	}
 

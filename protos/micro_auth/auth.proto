@@ -1,0 +1,21 @@
+syntax = "proto3";
+option go_package = "protos/micro_auth";
+
+service AuthService {
+  rpc Login (LoginRequest) returns (LoginResponse);
+}
+
+message LoginRequest {
+  string ID = 1;
+  string Email = 2;
+  bool VerifiedEmail = 3;
+  string Name = 4;
+  string GivenName = 5;
+  string FamilyName = 6;
+  string Picture = 7;
+  string Locale = 8;
+}
+
+message LoginResponse {
+  string token = 1;
+}

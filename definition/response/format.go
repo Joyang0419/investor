@@ -11,12 +11,16 @@ type Response struct {
 }
 
 func New(
-	message string,
 	customCode TypeCustomCode,
 	data any,
+	message ...string,
 ) Response {
+	var msg = ""
+	if len(message) > 0 {
+		msg = message[0]
+	}
 	return Response{
-		Message:    fmt.Sprintf("%s: %s", getCustomCodeName(customCode), message),
+		Message:    fmt.Sprintf("%s: %s", getCustomCodeName(customCode), msg),
 		CustomCode: customCode,
 		Data:       data,
 	}
@@ -29,6 +33,8 @@ type TypeCustomCode = int
 const (
 	Success TypeCustomCode = 2000000
 
+	ClientBadRequest = 4000000
+
 	ClientUnauthorized = 4010000
 	// ClientConflict 資源已存在
 	ClientConflict = 4090000
@@ -39,6 +45,7 @@ const (
 var customCodeNames = map[TypeCustomCode]string{
 	Success: "Success",
 
+	ClientBadRequest:   "ClientBadRequest",
 	ClientUnauthorized: "ClientUnauthorized",
 
 	ServerInternalError: "ServerInternalError",

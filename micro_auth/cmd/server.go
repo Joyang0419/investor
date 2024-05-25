@@ -10,7 +10,7 @@ import (
 	"google.golang.org/grpc"
 
 	"definition/micro_port"
-	"micro_auth/server/investor"
+	"micro_auth/server"
 	"protos/micro_auth"
 	investor2 "repo/mongodb/investor"
 	"tools/infra_conn"
@@ -54,9 +54,9 @@ func runServerCmd(_ *cobra.Command, _ []string) {
 	s := grpc.NewServer()
 	// 註冊Grpc服務
 	// TODO viper timeout 放入環境變數
-	micro_auth.RegisterInvestorServiceServer(
+	micro_auth.RegisterAuthServiceServer(
 		s,
-		investor.NewServer(
+		server.NewAuth(
 			investor2.NewQuery(mongoDbConn),
 			investor2.NewCommand(mongoDbConn),
 			30*time.Second,

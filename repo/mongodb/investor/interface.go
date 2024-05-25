@@ -10,7 +10,7 @@ import (
 )
 
 type ICommand interface {
-	InsertMany(ctx context.Context, timeout time.Duration, data []schema.Investor) (*mongo.InsertManyResult, error)
+	Upsert(ctx context.Context, timeout time.Duration, data schema.Investor) (*mongo.UpdateResult, error)
 }
 
 type IQuery interface {

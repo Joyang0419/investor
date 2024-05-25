@@ -1,5 +1,5 @@
 package errorx
 
-func CheckErrorExist(err error) bool {
+func IsErrorExist(err error) bool {
 	return err != nil
 }

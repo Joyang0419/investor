@@ -4,19 +4,20 @@ import (
 	"log"
 
 	"apiserver/conf"
+	"apiserver/handler"
+	oauthx "tools/oauth"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+
+	"github.com/gin-gonic/gin"
+	"github.com/spf13/cobra"
 
 	graphql "apiserver/graphql/resolver"
 	"apiserver/router"
 	"definition/micro_port"
 	"tools/grpcx"
 	"tools/logger"
-	"tools/oauth"
-
-	"github.com/gin-gonic/gin"
-	"github.com/spf13/cobra"
 )
 
 var serverCmd = &cobra.Command{
@@ -34,13 +35,6 @@ func init() {
 
 // TODO graceful shutdown: https://learnku.com/docs/gin-gonic/1.5/examples-graceful-restart-or-stop/6173
 func runServerCmd(cmd *cobra.Command, _ []string) {
-	googleOauth := oauthx.NewGoogleOauth(
-		conf.Config.Oauth2.Google.ClientId,
-		conf.Config.Oauth2.Google.ClientSecret,
-		conf.Config.Oauth2.Google.RedirectUrl,
-		conf.Config.Oauth2.Google.Scopes,
-	)
-
 	// grpc connection pool init
 	microAuthGrpcConnPool := grpcx.NewGrpcConnectionPool(
 		cmd.Context(),
@@ -52,16 +46,31 @@ func runServerCmd(cmd *cobra.Command, _ []string) {
 		microAuthGrpcConnPool.CloseAllConnectionsOfPool()
 	}()
 
+	// config
+	googleOauthConfig := oauthx.NewGoogleOauth(
+		conf.Config.Oauth2.Google.ClientId,
+		conf.Config.Oauth2.Google.ClientSecret,
+		conf.Config.Oauth2.Google.RedirectUrl,
+		conf.Config.Oauth2.Google.Scopes,
+	)
+
+	// router
 	r := router.NewGinRouter(
-		graphql.NewResolver(
-			graphql.NewQueryResolver(),
-			graphql.NewMutationResolver(),
-			graphql.NewGrpcConnectionPools(
-				microAuthGrpcConnPool,
-			),
-		),
 		[]gin.HandlerFunc{logger.GinLogger()},
-		googleOauth,
+		router.Handler{
+			AuthHandler: handler.NewAuthHandler(googleOauthConfig, handler.NewGrpcConnectionPools(
+				microAuthGrpcConnPool,
+			)),
+			GraphqlHandler: handler.NewGraphqlHandler(
+				graphql.NewResolver(
+					graphql.NewQueryResolver(),
+					graphql.NewMutationResolver(),
+					handler.NewGrpcConnectionPools(
+						microAuthGrpcConnPool,
+					),
+				),
+			),
+		},
 	)
 
 	if err := r.Run(conf.Config.Port); err != nil {

@@ -2,16 +2,18 @@ package router
 
 import (
 	"github.com/gin-gonic/gin"
-	"golang.org/x/oauth2"
 
-	"apiserver/graphql"
 	"apiserver/handler"
 )
 
+type Handler struct {
+	AuthHandler    handler.AuthHandler
+	GraphqlHandler handler.GraphqlHandler
+}
+
 func NewGinRouter(
-	resolver graphql.ResolverRoot,
 	middlewares []gin.HandlerFunc,
-	googleOauth oauth2.Config,
+	handler Handler,
 ) *gin.Engine {
 	router := gin.New()
 
@@ -20,11 +22,12 @@ func NewGinRouter(
 	}
 
 	router.POST("/query",
-		handler.GraphqlHandler(resolver),
+		handler.GraphqlHandler.HandleGraphql(),
 	)
-	router.GET("/login", handler.Login(googleOauth))
 
-	router.GET("/auth/google/callback", handler.GoogleCallback(googleOauth))
+	// 尚未進到系統前，都使用Restful api(example: login, callback, ...)
+	router.GET("/auth/google/login", handler.AuthHandler.GoogleOauthLoginHandler())
+	router.GET("/auth/google/callback", handler.AuthHandler.GoogleOauthCallbackHandler())
 
 	return router
 }

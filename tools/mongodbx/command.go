@@ -4,7 +4,9 @@ import (
 	"context"
 	"time"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 func InsertMany[docType any](
@@ -21,6 +23,24 @@ func InsertMany[docType any](
 		Database(storage.Database).
 		Collection(storage.Collection).
 		InsertMany(ctx, convertToInterfaceSlice(docs))
+}
+
+func Upsert[docType any](
+	ctx context.Context,
+	mongoDBClient *mongo.Client,
+	timeout time.Duration,
+	storage Storage,
+	filter map[string]interface{},
+	doc docType,
+) (*mongo.UpdateResult, error) {
+	ctx, cancelFunc := context.WithTimeout(ctx, timeout)
+	defer cancelFunc()
+	return mongoDBClient.Database(storage.Database).Collection(storage.Collection).UpdateOne(
+		ctx,
+		filter,
+		bson.M{"$set": doc},
+		options.Update().SetUpsert(true),
+	)
 }
 
 func convertToInterfaceSlice[docType any](slice []docType) []interface{} {

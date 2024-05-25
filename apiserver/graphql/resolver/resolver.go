@@ -2,7 +2,7 @@ package graphql
 
 import (
 	"apiserver/graphql"
-	"tools/grpcx"
+	"apiserver/handler"
 )
 
 // This file will not be regenerated automatically.
@@ -12,30 +12,18 @@ import (
 type Resolver struct {
 	QueryResolver       graphql.QueryResolver
 	MutationResolver    graphql.MutationResolver
-	GrpcConnectionPools *GrpcConnectionPools
+	GrpcConnectionPools handler.GrpcConnectionPools
 }
 
 func NewResolver(
 	queryResolver graphql.QueryResolver,
 	mutationResolver graphql.MutationResolver,
-	pools *GrpcConnectionPools,
+	pools handler.GrpcConnectionPools,
 ) graphql.ResolverRoot {
 	return &Resolver{
 		QueryResolver:       queryResolver,
 		MutationResolver:    mutationResolver,
 		GrpcConnectionPools: pools,
-	}
-}
-
-type GrpcConnectionPools struct {
-	MicroAuthGrpcConnPool *grpcx.GrpcConnectionPool
-}
-
-func NewGrpcConnectionPools(
-	microAuthGrpcConnPool *grpcx.GrpcConnectionPool,
-) *GrpcConnectionPools {
-	return &GrpcConnectionPools{
-		MicroAuthGrpcConnPool: microAuthGrpcConnPool,
 	}
 }
 

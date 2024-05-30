@@ -1,6 +1,12 @@
 package cmd
 
-import "github.com/spf13/cobra"
+import (
+	"github.com/spf13/cobra"
+
+	"apiserver/conf"
+	"tools/logger"
+	"tools/viperx"
+)
 
 var rootCmd = &cobra.Command{
 	Short: "Root short description",
@@ -14,6 +20,9 @@ func Execute() {
 }
 
 func init() {
-	// cmd setting...
-
+	if err := viperx.EnvSetIntoConfig("env", "yaml", "./conf", &conf.Config); err != nil {
+		logger.Fatal("viperx.EnvSetIntoConfig err: %v", err)
+	}
+	rootCmd.AddCommand(configCmd)
+	rootCmd.AddCommand(serverCmd)
 }

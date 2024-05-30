@@ -28,7 +28,6 @@ var serverCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(serverCmd)
 
-	conf.Init()
 }
 
 // TODO graceful shutdown: https://learnku.com/docs/gin-gonic/1.5/examples-graceful-restart-or-stop/6173
@@ -71,7 +70,7 @@ func runServerCmd(cmd *cobra.Command, _ []string) {
 		},
 	)
 
-	if err := r.Run(conf.Config.Port); err != nil {
+	if err := r.Run(conf.Config.Server.Port); err != nil {
 		logger.Fatal("[runServerCmd]r.Run err: %v", err)
 	}
 

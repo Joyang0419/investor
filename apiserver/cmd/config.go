@@ -1,10 +1,10 @@
 package cmd
 
 import (
-	"log"
-
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
+
+	"tools/logger"
+	"tools/viperx"
 )
 
 var configCmd = &cobra.Command{
@@ -14,19 +14,6 @@ var configCmd = &cobra.Command{
 	Run:   runConfigCmd,
 }
 
-func init() {
-	rootCmd.AddCommand(configCmd)
-}
-
 func runConfigCmd(_ *cobra.Command, _ []string) {
-	viper.SetConfigName("env")
-	viper.SetConfigType("yaml")
-	viper.AddConfigPath("./conf")
-
-	err := viper.ReadInConfig()
-	if err != nil {
-		log.Fatal("read config error: ", err)
-	}
-
-	log.Println(viper.AllSettings())
+	logger.Info("configCmd viperx.GetAllSettings(): %v", viperx.GetAllSettings())
 }

@@ -9,12 +9,13 @@ InstallGRPCPlugins:
 GenProtos:
 	protoc --go_out=. --go-grpc_out=. ./protos/*/*.proto
 
-CopyConfig:
-	cd apiserver && cp env.yaml.example env.yaml
+# 產生GraphQL schema
+GenGraphQL:
+	cd apiserver/graphql && go run github.com/99designs/gqlgen generate
 
 # 啟動ApiServer服務
 RunApiServer:
-	cd apiserver && cp env.yaml.example env.yaml && go mod tidy && go run main.go server
+	cd apiserver && cp conf/env.yaml.example conf/env.yaml && go mod tidy && go run main.go server
 
 # 啟動micro_auth服務
 RunMicroAuth:
@@ -35,9 +36,6 @@ UpDevInfra:
 # 關閉dev/build檔的dev docker compose yaml
 DownDevInfra:
 	cd build/dev && docker-compose down -v
-
-GenGraphQL:
-	cd apiserver/graphql && go run github.com/99designs/gqlgen generate
 
 MigrateUpMySQL:
 	cd build/dev && docker-compose up -d flyway

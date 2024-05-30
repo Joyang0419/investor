@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"fmt"
+
 	"apiserver/conf"
 	"apiserver/handler"
 	oauthx "tools/oauth"
@@ -13,7 +15,6 @@ import (
 
 	graphql "apiserver/graphql/resolver"
 	"apiserver/router"
-	"definition/micro_port"
 	"tools/grpcx"
 	"tools/logger"
 )
@@ -32,18 +33,16 @@ func init() {
 
 // TODO graceful shutdown: https://learnku.com/docs/gin-gonic/1.5/examples-graceful-restart-or-stop/6173
 func runServerCmd(cmd *cobra.Command, _ []string) {
-	// grpc connection pool init
 	microAuthGrpcConnPool := grpcx.NewGrpcConnectionPool(
 		cmd.Context(),
-		micro_port.GetGrpcAddress("localhost", micro_port.MicroAuthPort), // TODO domain viper
-		10, // TODO viper
+		grpcx.GetGrpcAddress(conf.Config.GrpcServer.MicroAuth.Domain, conf.Config.GrpcServer.MicroAuth.Port),
+		conf.Config.GrpcServer.MicroAuth.MaxConnectionNum,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
 	defer func() {
 		microAuthGrpcConnPool.CloseAllConnectionsOfPool()
 	}()
 
-	// config
 	googleOauthConfig := oauthx.NewGoogleOauth(
 		conf.Config.Oauth2.Google.ClientId,
 		conf.Config.Oauth2.Google.ClientSecret,
@@ -51,7 +50,6 @@ func runServerCmd(cmd *cobra.Command, _ []string) {
 		conf.Config.Oauth2.Google.Scopes,
 	)
 
-	// router
 	r := router.NewGinRouter(
 		[]gin.HandlerFunc{logger.GinLogger()},
 		router.Handler{
@@ -70,9 +68,8 @@ func runServerCmd(cmd *cobra.Command, _ []string) {
 		},
 	)
 
-	if err := r.Run(conf.Config.Server.Port); err != nil {
+	logger.Info("[runServerCmd]success on port: %d", conf.Config.Server.Port)
+	if err := r.Run(fmt.Sprintf(":%d", conf.Config.Server.Port)); err != nil {
 		logger.Fatal("[runServerCmd]r.Run err: %v", err)
 	}
-
-	logger.Info("[runServerCmd]success on port: 8080")
 }

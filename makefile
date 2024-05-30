@@ -19,7 +19,7 @@ RunApiServer:
 
 # 啟動micro_auth服務
 RunMicroAuth:
-	cd micro_auth && go mod tidy && go run main.go server
+	cd micro_auth && cp conf/env.yaml.example conf/env.yaml && go mod tidy && go run main.go server
 
 # 啟動micro_stock_price
 RunMicroStockPrice:

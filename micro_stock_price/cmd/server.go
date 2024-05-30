@@ -11,8 +11,6 @@ import (
 	"protos/micro_stock_price"
 	"tools/logger"
 
-	"definition/micro_port"
-
 	"github.com/spf13/cobra"
 )
 
@@ -27,8 +25,9 @@ func init() {
 	rootCmd.AddCommand(serverCmd)
 }
 
+// TODO , 因為業務定義不明確，還要思考一下，先不花時間, 還沒砍掉的原因，是因為 要把排程的東西，移動到 Scheduler
 func runServerCmd(_ *cobra.Command, _ []string) {
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", micro_port.MicroStockPricePort))
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", 0))
 	if err != nil {
 		log.Fatalf("net.Listen err: %v", err)
 	}

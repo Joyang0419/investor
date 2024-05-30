@@ -2,17 +2,26 @@ package conf
 
 var Config struct {
 	Server struct {
-		Port string `yaml:"port"`
-	} `yaml:"server"`
+		Port int
+	}
 	Jwt struct {
-		Secret string `yaml:"secret"`
-	} `yaml:"jwt"`
+		Secret string
+	}
 	Oauth2 struct {
 		Google struct {
-			ClientId     string   `yaml:"clientID"`
-			ClientSecret string   `yaml:"clientSecret"`
-			RedirectUrl  string   `yaml:"redirectURL"`
-			Scopes       []string `yaml:"scopes"`
+			ClientId     string
+			ClientSecret string
+			RedirectUrl  string
+			Scopes       []string
 		}
-	} `yaml:"oauth2"`
+	}
+	GrpcServer struct {
+		MicroAuth GrpcInfo
+	}
+}
+
+type GrpcInfo struct {
+	Domain           string
+	Port             int
+	MaxConnectionNum int
 }

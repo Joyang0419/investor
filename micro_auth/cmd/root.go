@@ -1,6 +1,13 @@
 package cmd
 
-import "github.com/spf13/cobra"
+import (
+	"micro_auth/conf"
+
+	"github.com/spf13/cobra"
+
+	"tools/logger"
+	"tools/viperx"
+)
 
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
@@ -9,8 +16,11 @@ func Execute() {
 }
 
 func init() {
-	// cmd setting...
-
+	if err := viperx.EnvSetIntoConfig("env", "yaml", "./conf", &conf.Config); err != nil {
+		logger.Fatal("viperx.EnvSetIntoConfig err: %v", err)
+	}
+	rootCmd.AddCommand(configCmd)
+	rootCmd.AddCommand(serverCmd)
 }
 
 var rootCmd = &cobra.Command{

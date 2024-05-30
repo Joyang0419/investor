@@ -4,12 +4,11 @@ import (
 	"fmt"
 	"log"
 	"net"
-	"time"
 
 	"github.com/spf13/cobra"
 	"google.golang.org/grpc"
 
-	"definition/micro_port"
+	"micro_auth/conf"
 	"micro_auth/server"
 	"protos/micro_auth"
 	investor2 "repo/mongodb/investor"
@@ -25,54 +24,48 @@ var serverCmd = &cobra.Command{
 	Run:   runServerCmd,
 }
 
-func init() {
-	rootCmd.AddCommand(serverCmd)
-}
-
 func runServerCmd(_ *cobra.Command, _ []string) {
 	// 註冊基礎設施
 	mongoDbConn, err := infra_conn.SetupMongoDB(
 		infra_conn.MongoDBCfg{
-			Host:            "127.0.0.1",
-			Port:            27017,
-			Username:        "root",
-			Password:        "root",
-			Database:        "admin",
-			ConnectTimeout:  20 * time.Second,
-			MaxPoolSize:     20,
-			MaxConnIdleTime: 15 * time.Minute,
+			Host:            conf.Config.MongoDB.Host,
+			Port:            conf.Config.MongoDB.Port,
+			Username:        conf.Config.MongoDB.Username,
+			Password:        conf.Config.MongoDB.Password,
+			Database:        conf.Config.MongoDB.Database,
+			ConnectTimeout:  conf.Config.MongoDB.ConnectTimeout,
+			MaxPoolSize:     conf.Config.MongoDB.MaxPoolSize,
+			MaxConnIdleTime: conf.Config.MongoDB.MaxConnIdleTime,
 		},
 	)
 	if err != nil {
 		logger.Fatal("[runDailyPriceCmd]infra_conn.SetupMongoDB err: %v", err)
 	}
 
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", micro_port.MicroAuthPort))
-	if err != nil {
-		log.Fatalf("net.Listen err: %v", err)
-	}
-
-	s := grpc.NewServer()
-	// 註冊Grpc服務
-	// TODO viper timeout 放入環境變數
+	// 註冊gRPC服務
+	grpcServer := grpc.NewServer()
 	micro_auth.RegisterAuthServiceServer(
-		s,
+		grpcServer,
 		server.NewAuth(
 			investor2.NewQuery(mongoDbConn),
 			investor2.NewCommand(mongoDbConn),
-			30*time.Second,
+			conf.Config.App.DBTimeout,
 			encryption.NewJWTEncryption[server.TokenInfo](
 				encryption.JWTRequirements{
-					SecretKey:      "kmkdmvqejmriqiwngijoqpw",
+					SecretKey:      conf.Config.Jwt.Secret,
 					SigningMethod:  encryption.JWTSigningMethodHS256,
-					ExpireDuration: 1 * time.Hour,
+					ExpireDuration: conf.Config.Jwt.ExpireDuration,
 				},
 			),
 		),
 	)
 
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", conf.Config.Server.Port))
+	if err != nil {
+		log.Fatalf("net.Listen err: %v", err)
+	}
 	logger.Info("gRPC server listening at %v", lis.Addr())
-	if err = s.Serve(lis); err != nil {
-		log.Fatalf("s.Serve err: %v", err)
+	if err = grpcServer.Serve(lis); err != nil {
+		log.Fatalf("grpcServer.Serve err: %v", err)
 	}
 }

@@ -1,12 +1,7 @@
-package micro_port
+package grpcx
 
 import (
 	"fmt"
-)
-
-const (
-	MicroStockPricePort = 50051
-	MicroAuthPort       = 50052
 )
 
 func GetGrpcAddress(domain string, port int) string {

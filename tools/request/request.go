@@ -111,5 +111,5 @@ func HttpRequest[T any](
 		return response, fmt.Errorf("[HttpRequest]io.ReadAll err: %w", err)
 	}
 
-	return serialization.JsonUnmarshal[T](string(bodyBytes))
+	return serialization.JsonUnmarshal[T](bodyBytes)
 }

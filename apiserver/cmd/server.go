@@ -26,11 +26,6 @@ var serverCmd = &cobra.Command{
 	Run:   runServerCmd,
 }
 
-func init() {
-	rootCmd.AddCommand(serverCmd)
-
-}
-
 // TODO graceful shutdown: https://learnku.com/docs/gin-gonic/1.5/examples-graceful-restart-or-stop/6173
 func runServerCmd(cmd *cobra.Command, _ []string) {
 	microAuthGrpcConnPool := grpcx.NewGrpcConnectionPool(

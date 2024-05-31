@@ -12,8 +12,8 @@ func JsonMarshal(input any) (jsonBytes []byte, err error) {
 	return sonic.Marshal(input)
 }
 
-func JsonUnmarshal[T any](jsonStr string) (result T, err error) {
-	if err = sonic.Unmarshal([]byte(jsonStr), &result); err != nil {
+func JsonUnmarshal[T any](jsonBytes []byte) (result T, err error) {
+	if err = sonic.Unmarshal(jsonBytes, &result); err != nil {
 		return result, fmt.Errorf("[JsonUnmarshal]sonic.Unmarshal err: %w", err)
 	}
 

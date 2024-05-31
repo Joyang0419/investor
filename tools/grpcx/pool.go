@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"slices"
 	"sync"
+	"time"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/connectivity"
@@ -37,6 +38,9 @@ func NewGrpcConnectionPool(
 		maxConnectionNum: maxConnectionNum,
 	}
 
+	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
+	defer cancel()
+	options = append(options, grpc.WithBlock())
 	for i := 0; i < maxConnectionNum; i++ {
 		conn, err := grpc.DialContext(
 			ctx,
@@ -44,8 +48,8 @@ func NewGrpcConnectionPool(
 			options...,
 		)
 		if errorx.IsErrorExist(err) {
-			pool.CloseAllConnectionsOfPool() // CloseAllConnectionsOfPool all previously opened connections
-			logger.Fatal("[GrpcConnectionPool] grpc.Dial err: %v", err)
+			logger.Error("[NewGrpcConnectionPool]grpc.DialContext err: %v, serverAddr: %s", err, serverAddr)
+			break
 		}
 		pool.conns = append(pool.conns, conn)
 	}

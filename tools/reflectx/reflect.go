@@ -15,3 +15,11 @@ func IsStructPtr(v interface{}) bool {
 	t := reflect.TypeOf(v)
 	return t.Kind() == reflect.Ptr && t.Elem().Kind() == reflect.Struct
 }
+
+func IsMap(data any) bool {
+	return reflect.TypeOf(data).Kind() == reflect.Map
+}
+
+func IsSlice(data any) bool {
+	return reflect.TypeOf(data).Kind() == reflect.Slice
+}

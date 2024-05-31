@@ -5,6 +5,7 @@ import (
 
 	"golang.org/x/exp/constraints"
 
+	"tools/reflectx"
 	"tools/slicex"
 )
 
@@ -24,7 +25,7 @@ func CombineMaps[TypeKey constraints.Ordered](maps ...map[TypeKey]interface{}) m
 			}
 
 			// 以下代碼, 是目前想到是容器, ex: map or slice, 不是Replace value, 而是合併
-			if checkIsMap(value) {
+			if reflectx.IsMap(value) {
 				existingVal := reflect.ValueOf(value)
 				newVal := reflect.ValueOf(v)
 				for _, mapKey := range newVal.MapKeys() {
@@ -34,7 +35,7 @@ func CombineMaps[TypeKey constraints.Ordered](maps ...map[TypeKey]interface{}) m
 				continue
 			}
 
-			if checkIsSlice(value) {
+			if reflectx.IsSlice(value) {
 				existingVal := reflect.ValueOf(value)
 				newVal := reflect.ValueOf(v)
 				combinedSlice := reflect.AppendSlice(existingVal, newVal)
@@ -47,12 +48,4 @@ func CombineMaps[TypeKey constraints.Ordered](maps ...map[TypeKey]interface{}) m
 	}
 
 	return result
-}
-
-func checkIsMap(data any) bool {
-	return reflect.TypeOf(data).Kind() == reflect.Map
-}
-
-func checkIsSlice(data any) bool {
-	return reflect.TypeOf(data).Kind() == reflect.Slice
 }

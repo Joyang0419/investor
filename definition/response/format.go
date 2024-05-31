@@ -47,6 +47,7 @@ var customCodeNames = map[TypeCustomCode]string{
 
 	ClientBadRequest:   "ClientBadRequest",
 	ClientUnauthorized: "ClientUnauthorized",
+	ClientConflict:     "ClientConflict",
 
 	ServerInternalError: "ServerInternalError",
 }

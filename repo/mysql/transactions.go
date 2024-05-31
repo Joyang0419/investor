@@ -5,7 +5,7 @@ import (
 )
 
 type Transaction struct {
-	TransactionID   int       `gorm:"column:transaction_id"`    // 交易ID
+	ID              int       `gorm:"column:id"`                // 交易ID
 	Type            string    `gorm:"column:type"`              // 交易類型
 	Amount          float64   `gorm:"column:amount"`            // 交易金額
 	AccountID       int       `gorm:"column:account_id"`        // 交易帳戶ID

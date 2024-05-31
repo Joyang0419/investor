@@ -5,7 +5,7 @@ import (
 )
 
 type Account struct {
-	AccountID   int       `gorm:"column:account_id"`    // 帳戶ID
+	ID          int       `gorm:"column:id"`            // 帳戶ID
 	Email       string    `gorm:"column:email"`         // 電子郵件
 	AccountName string    `gorm:"column:account_name"`  // 帳戶名稱
 	Picture     string    `gorm:"column:picture"`       // 大頭貼URL

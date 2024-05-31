@@ -4,6 +4,26 @@ import (
 	"golang.org/x/exp/constraints"
 )
 
-func IsNotZero[numberType constraints.Float | constraints.Integer | constraints.Signed | constraints.Unsigned](number numberType) bool {
-	return number != numberType(0)
+type TypeNumber interface {
+	constraints.Float | constraints.Integer | constraints.Signed | constraints.Unsigned
+}
+
+func IsNotZero[typeNumber TypeNumber](number typeNumber) bool {
+	return number != typeNumber(0)
+}
+
+func IsGTE[typeNumber TypeNumber](number typeNumber, compareNumber typeNumber) bool {
+	return number >= compareNumber
+}
+
+func IsLTE[typeNumber TypeNumber](number typeNumber, compareNumber typeNumber) bool {
+	return number <= compareNumber
+}
+
+func IsLT[typeNumber TypeNumber](number typeNumber, compareNumber typeNumber) bool {
+	return number < compareNumber
+}
+
+func IsGT[typeNumber TypeNumber](number typeNumber, compareNumber typeNumber) bool {
+	return number > compareNumber
 }

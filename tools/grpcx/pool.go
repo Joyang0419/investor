@@ -91,7 +91,7 @@ func (p *GrpcConnectionPool) GetConnFromPool() (*grpc.ClientConn, error) {
 // getNextCursorIdx 取得下一個游標位置, 當下一個游標位置超過連線池長度時, 重置游標位置
 func (p *GrpcConnectionPool) getNextCursorIdx() int {
 	p.cursorIdx++
-	if slicex.CheckIdxInSlice(p.conns, p.cursorIdx) {
+	if slicex.IsIdxInSlice(p.conns, p.cursorIdx) {
 		return p.cursorIdx
 	}
 	return 0

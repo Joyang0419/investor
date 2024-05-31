@@ -23,3 +23,7 @@ func IsMap(data any) bool {
 func IsSlice(data any) bool {
 	return reflect.TypeOf(data).Kind() == reflect.Slice
 }
+
+func IsNil(data any) bool {
+	return data == nil
+}

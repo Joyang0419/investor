@@ -63,3 +63,12 @@ services:
     depends_on:
       - mongodb
     command: ["migrate-mongo", "up"]
+
+  redis:
+    image: redis:7.2.5-alpine
+    container_name: redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - ../volume/redis/data:/data

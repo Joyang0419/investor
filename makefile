@@ -7,7 +7,7 @@ InstallGRPCPlugins:
 
 # 讓protos產生pb.go
 GenProtos:
-	protoc --go_out=. --go-grpc_out=. ./protos/*/*.proto
+	protoc --go_out=. --go-grpc_out=. ./protos/*.proto
 
 # 產生GraphQL schema
 GenGraphQL:

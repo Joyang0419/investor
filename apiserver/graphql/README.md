@@ -106,3 +106,7 @@ type User {
   emails: [String]!
 }
 ```
+
+# Mutation
+- 变更类型（Mutation）用于修改数据，它是GraphQL的一个特殊类型，用于执行写操作，如创建、更新、删除等。
+- 不要去想「Nested Mutation」，撞過了，找不到答案，命名明確就好。

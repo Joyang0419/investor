@@ -1,0 +1,23 @@
+type Mutation {
+    # 存款
+    Deposit(amount: Float!): TransactionResult!
+    # 提款
+    Withdraw(amount: Float!): TransactionResult!
+    # 轉帳
+    Transfer(toAccountID: ID!, amount: Float!): TransactionResult!
+}
+
+type Transaction {
+    ID: ID!
+    Type: String!
+    Amount: Float!
+    Account: Account!
+    TargetAccount: Account!
+    CreatedAt: String!
+}
+
+type TransactionResult {
+    Success: Boolean!
+    Message: String!
+    Transaction: Transaction
+}

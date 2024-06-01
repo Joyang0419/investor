@@ -1,0 +1,9 @@
+type Account {
+    id: ID!
+    email: String!
+    name: String!
+    picture: String!
+    balance: Float!
+    lastLoginAt: String!
+    createdAt: String!
+}

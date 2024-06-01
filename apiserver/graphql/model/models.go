@@ -2,34 +2,33 @@
 
 package model
 
-type BaseResponse interface {
-	IsBaseResponse()
-	GetCode() int
-	GetMessage() string
+type Account struct {
+	ID          string  `json:"id"`
+	Email       string  `json:"email"`
+	Name        string  `json:"name"`
+	Picture     string  `json:"picture"`
+	Balance     float64 `json:"balance"`
+	LastLoginAt string  `json:"lastLoginAt"`
+	CreatedAt   string  `json:"createdAt"`
 }
 
 type Mutation struct {
 }
 
-type MutationEchoOutput struct {
-	Code    int    `json:"code"`
-	Message string `json:"message"`
-	Data    string `json:"Data"`
-}
-
-func (MutationEchoOutput) IsBaseResponse()         {}
-func (this MutationEchoOutput) GetCode() int       { return this.Code }
-func (this MutationEchoOutput) GetMessage() string { return this.Message }
-
 type Query struct {
 }
 
-type QueryEchoOutput struct {
-	Code    int    `json:"code"`
-	Message string `json:"message"`
-	Data    string `json:"Data"`
+type Transaction struct {
+	ID            string   `json:"ID"`
+	Type          string   `json:"Type"`
+	Amount        float64  `json:"Amount"`
+	Account       *Account `json:"Account"`
+	TargetAccount *Account `json:"TargetAccount"`
+	CreatedAt     string   `json:"CreatedAt"`
 }
 
-func (QueryEchoOutput) IsBaseResponse()         {}
-func (this QueryEchoOutput) GetCode() int       { return this.Code }
-func (this QueryEchoOutput) GetMessage() string { return this.Message }
+type TransactionResult struct {
+	Success     bool         `json:"Success"`
+	Message     string       `json:"Message"`
+	Transaction *Transaction `json:"Transaction,omitempty"`
+}

@@ -53,7 +53,6 @@ func runServerCmd(cmd *cobra.Command, _ []string) {
 			)),
 			GraphqlHandler: handler.NewGraphqlHandler(
 				graphql.NewResolver(
-					graphql.NewQueryResolver(),
 					graphql.NewMutationResolver(),
 					handler.NewGrpcConnectionPools(
 						microAuthGrpcConnPool,

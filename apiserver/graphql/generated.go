@@ -1181,9 +1181,9 @@ func (ec *executionContext) _Transaction_Type(ctx context.Context, field graphql
 		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(model.TransactionType)
 	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
+	return ec.marshalNTransactionType2apiserverᚋgraphqlᚋmodelᚐTransactionType(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Transaction_Type(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1193,7 +1193,7 @@ func (ec *executionContext) fieldContext_Transaction_Type(ctx context.Context, f
 		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
+			return nil, errors.New("field of type TransactionType does not have child fields")
 		},
 	}
 	return fc, nil
@@ -4031,6 +4031,16 @@ func (ec *executionContext) marshalNTransactionResult2ᚖapiserverᚋgraphqlᚋm
 		return graphql.Null
 	}
 	return ec._TransactionResult(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNTransactionType2apiserverᚋgraphqlᚋmodelᚐTransactionType(ctx context.Context, v interface{}) (model.TransactionType, error) {
+	var res model.TransactionType
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNTransactionType2apiserverᚋgraphqlᚋmodelᚐTransactionType(ctx context.Context, sel ast.SelectionSet, v model.TransactionType) graphql.Marshaler {
+	return v
 }
 
 func (ec *executionContext) marshalN__Directive2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐDirective(ctx context.Context, sel ast.SelectionSet, v introspection.Directive) graphql.Marshaler {

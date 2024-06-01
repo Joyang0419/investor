@@ -2,6 +2,12 @@
 
 package model
 
+import (
+	"fmt"
+	"io"
+	"strconv"
+)
+
 type Account struct {
 	ID          string  `json:"id"`
 	Email       string  `json:"email"`
@@ -19,16 +25,59 @@ type Query struct {
 }
 
 type Transaction struct {
-	ID            string   `json:"ID"`
-	Type          string   `json:"Type"`
-	Amount        float64  `json:"Amount"`
-	Account       *Account `json:"Account"`
-	TargetAccount *Account `json:"TargetAccount"`
-	CreatedAt     string   `json:"CreatedAt"`
+	ID            string          `json:"ID"`
+	Type          TransactionType `json:"Type"`
+	Amount        float64         `json:"Amount"`
+	Account       *Account        `json:"Account"`
+	TargetAccount *Account        `json:"TargetAccount"`
+	CreatedAt     string          `json:"CreatedAt"`
 }
 
 type TransactionResult struct {
 	Success     bool         `json:"Success"`
 	Message     string       `json:"Message"`
 	Transaction *Transaction `json:"Transaction,omitempty"`
+}
+
+type TransactionType string
+
+const (
+	TransactionTypeDeposit    TransactionType = "DEPOSIT"
+	TransactionTypeWithdrawal TransactionType = "WITHDRAWAL"
+	TransactionTypeTransfer   TransactionType = "TRANSFER"
+)
+
+var AllTransactionType = []TransactionType{
+	TransactionTypeDeposit,
+	TransactionTypeWithdrawal,
+	TransactionTypeTransfer,
+}
+
+func (e TransactionType) IsValid() bool {
+	switch e {
+	case TransactionTypeDeposit, TransactionTypeWithdrawal, TransactionTypeTransfer:
+		return true
+	}
+	return false
+}
+
+func (e TransactionType) String() string {
+	return string(e)
+}
+
+func (e *TransactionType) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = TransactionType(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid TransactionType", str)
+	}
+	return nil
+}
+
+func (e TransactionType) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
 }

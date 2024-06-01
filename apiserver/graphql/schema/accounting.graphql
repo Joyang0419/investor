@@ -7,9 +7,15 @@ type Mutation {
     Transfer(toAccountID: ID!, amount: Float!): TransactionResult!
 }
 
+enum TransactionType {
+    DEPOSIT
+    WITHDRAWAL
+    TRANSFER
+}
+
 type Transaction {
     ID: ID!
-    Type: String!
+    Type: TransactionType!
     Amount: Float!
     Account: Account!
     TargetAccount: Account!

@@ -57,3 +57,14 @@ func (query *TransactionQuery) CheckValid(trx Transaction) error {
 
 	return nil
 }
+
+type ITransactionCommand interface {
+}
+
+type TransactionCommand struct {
+	db *gorm.DB
+}
+
+func NewTransactionCommand(db *gorm.DB) ITransactionCommand {
+	return &TransactionCommand{db: db}
+}

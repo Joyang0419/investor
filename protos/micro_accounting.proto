@@ -2,48 +2,55 @@ syntax = "proto3";
 
 option go_package = "protos/micro_accounting";
 
-import "google/protobuf/timestamp.proto";
-
 service AccountingService {
   rpc Withdraw(WithdrawRequest) returns (WithdrawResponse);
   rpc Deposit(DepositRequest) returns (DepositResponse);
   rpc Transfer(TransferRequest) returns (TransferResponse);
 }
 
-message BaseTransactionResponse {
-  uint64 Id = 1;                       // 交易ID
-  string Type = 2;                     // 交易類型
-  double Amount = 3;                   // 交易金額
-  uint64 AccountID = 4;                // 交易帳戶ID
-  uint64 TargetAccountID = 5;          // 目標帳戶ID
-  google.protobuf.Timestamp CreatedAt = 6; // 交易時間
-}
-
 message WithdrawRequest {
-  string AccountID = 1;
+  uint64 AccountID = 1;
   double Amount = 2;
 }
 
 message WithdrawResponse {
-  BaseTransactionResponse base = 1;
+  uint64 ID = 1;                       // 交易ID
+  string Type = 2;                     // 交易類型
+  double Amount = 3;                   // 交易金額
+  uint64 AccountID = 4;                // 交易帳戶ID
+  uint64 TargetAccountID = 5;          // 目標帳戶ID
+  int64 CreatedAt = 6; // 交易時間
+  double CurrentBalance = 7; // 當前餘額
 }
 
 message DepositRequest {
-  uint32 AccountID = 1;
+  uint64 AccountID = 1;
   double Amount = 2;
 }
 
 message DepositResponse {
-  BaseTransactionResponse base = 1;
+  uint64 ID = 1;                       // 交易ID
+  string Type = 2;                     // 交易類型
+  double Amount = 3;                   // 交易金額
+  uint64 AccountID = 4;                // 交易帳戶ID
+  uint64 TargetAccountID = 5;          // 目標帳戶ID
+  int64 CreatedAt = 6; // 交易時間
+  double CurrentBalance = 7; // 當前餘額
 }
 
 message TransferRequest {
-  uint32 AccountID = 1;
-  uint32 TargetAccountID = 2;
+  uint64 AccountID = 1;
+  uint64 TargetAccountID = 2;
   double Amount = 3;
 }
 
 message TransferResponse {
-  BaseTransactionResponse base = 1;
+  uint64 ID = 1;                       // 交易ID
+  string Type = 2;                     // 交易類型
+  double Amount = 3;                   // 交易金額
+  uint64 AccountID = 4;                // 交易帳戶ID
+  uint64 TargetAccountID = 5;          // 目標帳戶ID
+  int64 CreatedAt = 6; // 交易時間
+  double CurrentBalance = 7; // 當前餘額
 }
 

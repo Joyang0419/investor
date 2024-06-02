@@ -18,7 +18,7 @@ import (
 )
 
 var serverCmd = &cobra.Command{
-	Use:   "server",
+	Use:   "service",
 	Short: "",
 	Long:  "",
 	Run:   runServerCmd,
@@ -64,7 +64,7 @@ func runServerCmd(_ *cobra.Command, _ []string) {
 	if err != nil {
 		log.Fatalf("net.Listen err: %v", err)
 	}
-	logger.Info("gRPC server listening at %v", lis.Addr())
+	logger.Info("gRPC service listening at %v", lis.Addr())
 	if err = grpcServer.Serve(lis); err != nil {
 		log.Fatalf("grpcServer.Serve err: %v", err)
 	}

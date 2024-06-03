@@ -16,7 +16,7 @@ import (
 )
 
 var serverCmd = &cobra.Command{
-	Use:   "service",
+	Use:   "server",
 	Short: "",
 	Long:  "",
 	Run:   runServerCmd,
@@ -38,10 +38,19 @@ func runServerCmd(_ *cobra.Command, _ []string) {
 		nil,
 	)
 
+	redisClient := infra_conn.SetupRedis(
+		infra_conn.RedisCfg{
+			Host:     conf.Config.Redis.Host,
+			Port:     conf.Config.Redis.Port,
+			Password: conf.Config.Redis.Password,
+			DB:       conf.Config.Redis.DB,
+		},
+	)
+
 	// Query
 	accountQuery := accounting.NewQuery(mysqlConn)
 	// Command
-	accountCommand := accounting.NewCommand(mysqlConn, nil)
+	accountCommand := accounting.NewCommand(mysqlConn, redisClient)
 
 	// 註冊gRPC服務
 	grpcServer := grpc.NewServer()

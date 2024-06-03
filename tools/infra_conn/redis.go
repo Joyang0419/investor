@@ -8,14 +8,15 @@ import (
 )
 
 type RedisCfg struct {
-	Addr     string
+	Host     string
+	Port     int
 	Password string
 	DB       int
 }
 
 func SetupRedis(config RedisCfg) *redis.Client {
 	client := redis.NewClient(&redis.Options{
-		Addr:     config.Addr,
+		Addr:     fmt.Sprintf("%s:%d", config.Host, config.Port),
 		Password: config.Password,
 		DB:       config.DB,
 	})

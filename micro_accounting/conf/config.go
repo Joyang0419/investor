@@ -18,4 +18,10 @@ var Config struct {
 		MaxOpenConns    uint8
 		ConnMaxLifeTime time.Duration
 	}
+	Redis struct {
+		Host     string
+		Port     int
+		Password string
+		DB       int
+	}
 }

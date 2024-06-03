@@ -1,6 +1,7 @@
 package intergrationtest
 
 import (
+	"errors"
 	"io"
 	"log"
 	"time"
@@ -49,8 +50,7 @@ func CreateMySQLContainer(name string) (*dockertest.Pool, *dockertest.Resource, 
 
 	var dbConn *gorm.DB
 	if err = pool.Retry(func() error {
-		var retryErr error
-		if dbConn, retryErr = infra_conn.SetupMySQL(
+		if dbConn = infra_conn.SetupMySQL(
 			infra_conn.MySQLCfg{
 				Host:            host,
 				Port:            port,
@@ -61,8 +61,8 @@ func CreateMySQLContainer(name string) (*dockertest.Pool, *dockertest.Resource, 
 				MaxOpenConns:    10,
 				ConnMaxLifeTime: 60 * time.Second,
 			}, nil,
-		); retryErr != nil {
-			return retryErr
+		); dbConn == nil {
+			return errors.New("dbConn is nil")
 		}
 		return nil
 

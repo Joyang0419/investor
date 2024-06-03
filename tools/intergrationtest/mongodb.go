@@ -1,10 +1,12 @@
 package intergrationtest
 
 import (
+	"errors"
 	"log"
 	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"
+
 	"tools/infra_conn"
 
 	"github.com/ory/dockertest"
@@ -36,8 +38,7 @@ func CreateMongoDBContainer(name string) (*dockertest.Pool, *dockertest.Resource
 
 	var dbConn *mongo.Client
 	if err = pool.Retry(func() error {
-		var retryErr error
-		if dbConn, retryErr = infra_conn.SetupMongoDB(
+		if dbConn = infra_conn.SetupMongoDB(
 			infra_conn.MongoDBCfg{
 				Host:            host,
 				Port:            port,
@@ -48,8 +49,8 @@ func CreateMongoDBContainer(name string) (*dockertest.Pool, *dockertest.Resource
 				MaxPoolSize:     20,
 				MaxConnIdleTime: 15 * time.Minute,
 			},
-		); retryErr != nil {
-			return retryErr
+		); dbConn == nil {
+			return errors.New("dbConn is nil")
 		}
 		return nil
 

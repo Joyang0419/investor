@@ -9,9 +9,8 @@ import (
 	"google.golang.org/grpc"
 
 	"micro_accounting/conf"
-	"micro_accounting/service"
+	"micro_accounting/service/accounting"
 	"protos/micro_accounting"
-	"repo/mysql"
 	"tools/infra_conn"
 	"tools/logger"
 )
@@ -43,17 +42,17 @@ func runServerCmd(_ *cobra.Command, _ []string) {
 	}
 
 	// Query
-	accountQuery := mysql.NewAccountQuery(mysqlConn)
+	accountQuery := accounting.NewQuery(mysqlConn)
 	// Command
-	transactionCommand := mysql.NewTransactionCommand(mysqlConn)
+	accountCommand := accounting.NewCommand(mysqlConn, nil)
 
 	// 註冊gRPC服務
 	grpcServer := grpc.NewServer()
 	micro_accounting.RegisterAccountingServiceServer(
 		grpcServer,
-		service.NewAccounting(
+		accounting.NewService(
 			accountQuery,
-			transactionCommand,
+			accountCommand,
 		),
 	)
 

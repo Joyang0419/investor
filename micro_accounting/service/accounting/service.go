@@ -18,8 +18,14 @@ type Service struct {
 	Command ICommand
 }
 
-func NewService() micro_accounting.AccountingServiceServer {
-	return &Service{}
+func NewService(
+	query IQuery,
+	command ICommand,
+) micro_accounting.AccountingServiceServer {
+	return &Service{
+		Query:   query,
+		Command: command,
+	}
 }
 
 var (
@@ -51,15 +57,6 @@ func (s *Service) Withdraw(ctx context.Context, request *micro_accounting.Withdr
 	if !existed {
 		return nil, fmt.Errorf("[Withdraw]IsAccountIDsExist: %w, accountID: %d", ErrWrongAccount, request.AccountID)
 	}
-
-	if err = s.Command.SetAccountingLock(ctx, request.AccountID); errorx.IsErrorExist(err) {
-		return nil, fmt.Errorf("[Withdraw]SetAccountingLock: %w, accountID: %d, raw error: %v", ErrAccountingLocked, request.AccountID, err)
-	}
-	defer func() {
-		if errReleaseLock := s.Command.ReleaseAccountingLock(ctx, request.AccountID); errorx.IsErrorExist(errReleaseLock) {
-			err = fmt.Errorf("[Withdraw]ReleaseAccountingLock: %w, accountID: %d, raw error: %v", ErrAccountingReleaseLockFailed, request.AccountID, errReleaseLock)
-		}
-	}()
 
 	createdAt := time.Now()
 	transactionID, updatedBalance, err := s.Command.Withdraw(ctx, request.AccountID, request.Amount, createdAt)
@@ -94,15 +91,6 @@ func (s *Service) Deposit(ctx context.Context, request *micro_accounting.Deposit
 		return nil, fmt.Errorf("[Deposit]IsAccountIDsExist: %w, accountID: %d", ErrWrongAccount, request.AccountID)
 	}
 
-	if err = s.Command.SetAccountingLock(ctx, request.AccountID); errorx.IsErrorExist(err) {
-		return nil, fmt.Errorf("[Deposit]SetAccountingLock: %w, accountID: %d, raw error: %v", ErrAccountingLocked, request.AccountID, err)
-	}
-	defer func() {
-		if errReleaseLock := s.Command.ReleaseAccountingLock(ctx, request.AccountID); errorx.IsErrorExist(errReleaseLock) {
-			err = fmt.Errorf("[Deposit]ReleaseAccountingLock: %w, accountID: %d, raw error: %v", ErrAccountingReleaseLockFailed, request.AccountID, errReleaseLock)
-		}
-	}()
-
 	createdAt := time.Now()
 	transactionID, updatedBalance, err := s.Command.Deposit(ctx, request.AccountID, request.Amount, createdAt)
 	if errorx.IsErrorExist(err) {
@@ -130,25 +118,16 @@ func (s *Service) Transfer(ctx context.Context, request *micro_accounting.Transf
 
 	existed, err := s.Query.IsAccountIDsExist(ctx, []uint64{request.AccountID, request.TargetAccountID})
 	if errorx.IsErrorExist(err) {
-		return nil, fmt.Errorf("[Deposit]IsAccountIDsExist err: %w", err)
+		return nil, fmt.Errorf("[Transfer]IsAccountIDsExist err: %w", err)
 	}
 	if !existed {
-		return nil, fmt.Errorf("[Deposit]IsAccountIDsExist: %w, accountID: %d", ErrWrongAccount, request.AccountID)
+		return nil, fmt.Errorf("[Transfer]IsAccountIDsExist: %w, accountID: %d", ErrWrongAccount, request.AccountID)
 	}
-
-	if err = s.Command.SetAccountingLock(ctx, request.AccountID); errorx.IsErrorExist(err) {
-		return nil, fmt.Errorf("[Deposit]SetAccountingLock: %w, accountID: %d, raw error: %v", ErrAccountingLocked, request.AccountID, err)
-	}
-	defer func() {
-		if errReleaseLock := s.Command.ReleaseAccountingLock(ctx, request.AccountID); errorx.IsErrorExist(errReleaseLock) {
-			err = fmt.Errorf("[Deposit]ReleaseAccountingLock: %w, accountID: %d, raw error: %v", ErrAccountingReleaseLockFailed, request.AccountID, errReleaseLock)
-		}
-	}()
 
 	createdAt := time.Now()
 	transactionID, updatedBalance, err := s.Command.Transfer(ctx, request.AccountID, request.TargetAccountID, request.Amount, createdAt)
 	if errorx.IsErrorExist(err) {
-		return nil, fmt.Errorf("[Deposit]Deposit err: %w, accountID: %d, amount: %f", err, request.AccountID, request.Amount)
+		return nil, fmt.Errorf("[Transfer]Deposit err: %w, accountID: %d, amount: %f", err, request.AccountID, request.Amount)
 	}
 
 	return &micro_accounting.TransferResponse{

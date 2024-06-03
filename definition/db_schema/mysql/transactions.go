@@ -1,6 +1,7 @@
 package mysql
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"time"
@@ -29,12 +30,26 @@ func (*Transaction) TableName() string {
 	return "transactions"
 }
 
-// BeforeSave 鉤子函數，在保存前進行驗證
-func (t *Transaction) BeforeSave(tx *gorm.DB) (err error) {
-	_ = tx
-	if slicex.IsElementInSlice(validTransactionTypes, t.Type) {
-		return fmt.Errorf("[Transaction][BeforeSave]err: %w, type: %s", errWrongTransactionType, t.Type)
+func (model *Transaction) Create(
+	ctx context.Context,
+	db *gorm.DB,
+	transactionType string, amount float64,
+	accountID, targetAccountID uint64, createdAt time.Time,
+) (insertedID uint64, err error) {
+	readyToInsert := Transaction{
+		Type:            transactionType,
+		Amount:          amount,
+		AccountID:       accountID,
+		TargetAccountID: targetAccountID,
+		CreatedAt:       createdAt,
 	}
 
-	return nil
+	if slicex.IsElementInSlice(validTransactionTypes, readyToInsert.Type) {
+		return 0, fmt.Errorf("[model.Transaction][Create]err: %w", errWrongTransactionType)
+	}
+	if db.WithContext(ctx).Create(&readyToInsert).Error != nil {
+		return 0, fmt.Errorf("[model.Transaction][Create]Create err: %w", err)
+	}
+
+	return readyToInsert.ID, nil
 }

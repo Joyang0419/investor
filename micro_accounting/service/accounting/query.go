@@ -4,6 +4,8 @@ import (
 	"context"
 
 	"gorm.io/gorm"
+
+	"definition/db_schema/mysql"
 )
 
 type IQuery interface {
@@ -15,7 +17,7 @@ type Query struct {
 }
 
 func (q *Query) IsAccountIDsExist(ctx context.Context, accountIDs []uint64) (bool, error) {
-	panic("implement me")
+	return new(mysql.Account).IsCorrectAccountIDs(ctx, q.mysqlDB, accountIDs...)
 }
 
 func NewQuery(mysqlDB *gorm.DB) IQuery {

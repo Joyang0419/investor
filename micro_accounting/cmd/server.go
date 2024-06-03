@@ -24,7 +24,7 @@ var serverCmd = &cobra.Command{
 
 func runServerCmd(_ *cobra.Command, _ []string) {
 	// 註冊基礎設施
-	mysqlConn, err := infra_conn.SetupMySQL(
+	mysqlConn := infra_conn.SetupMySQL(
 		infra_conn.MySQLCfg{
 			Host:            conf.Config.MySQL.Host,
 			Port:            conf.Config.MySQL.Port,
@@ -37,9 +37,6 @@ func runServerCmd(_ *cobra.Command, _ []string) {
 		},
 		nil,
 	)
-	if err != nil {
-		log.Fatalf("infra_conn.SetupMySQL err: %v", err)
-	}
 
 	// Query
 	accountQuery := accounting.NewQuery(mysqlConn)

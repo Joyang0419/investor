@@ -26,7 +26,7 @@ var serverCmd = &cobra.Command{
 
 func runServerCmd(_ *cobra.Command, _ []string) {
 	// 註冊基礎設施
-	mongoDbConn, err := infra_conn.SetupMongoDB(
+	mongoDbConn := infra_conn.SetupMongoDB(
 		infra_conn.MongoDBCfg{
 			Host:            conf.Config.MongoDB.Host,
 			Port:            conf.Config.MongoDB.Port,
@@ -38,9 +38,6 @@ func runServerCmd(_ *cobra.Command, _ []string) {
 			MaxConnIdleTime: conf.Config.MongoDB.MaxConnIdleTime,
 		},
 	)
-	if err != nil {
-		logger.Fatal("[runDailyPriceCmd]infra_conn.SetupMongoDB err: %v", err)
-	}
 
 	// 註冊gRPC服務
 	grpcServer := grpc.NewServer()

@@ -22,7 +22,7 @@ type MongoDBCfg struct {
 }
 
 // SetupMongoDB 用於建立與MongoDB的連線
-func SetupMongoDB(config MongoDBCfg) (*mongo.Client, error) {
+func SetupMongoDB(config MongoDBCfg) *mongo.Client {
 	// 建立MongoDB客戶端配置
 	uri := fmt.Sprintf("mongodb://%s:%s@%s:%d/%s", config.Username, config.Password, config.Host, config.Port, config.Database)
 	clientOptions := options.Client().
@@ -34,14 +34,13 @@ func SetupMongoDB(config MongoDBCfg) (*mongo.Client, error) {
 	// 建立MongoDB連線
 	client, err := mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {
-		return nil, fmt.Errorf("[SetupMongoDB]mongo.Connect err: %w", err)
+		panic(fmt.Sprintf("[SetupMongoDB]mongo.Connect err: %v", err))
 	}
 
 	// 檢查連線
-	err = client.Ping(context.TODO(), nil)
-	if err != nil {
-		return nil, fmt.Errorf("[SetupMongoDB]client.Ping err: %w", err)
+	if err = client.Ping(context.TODO(), nil); err != nil {
+		panic(fmt.Sprintf("[SetupMongoDB]client.Ping err: %v", err))
 	}
 
-	return client, nil
+	return client
 }

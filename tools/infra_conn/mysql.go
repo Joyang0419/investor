@@ -20,7 +20,7 @@ type MySQLCfg struct {
 	ConnMaxLifeTime time.Duration `mapstructure:"ConnMaxLifeTime" default:"60m"`
 }
 
-func SetupMySQL(config MySQLCfg, logger logger.Interface) (*gorm.DB, error) {
+func SetupMySQL(config MySQLCfg, logger logger.Interface) *gorm.DB {
 	// dataSourceName
 	dsn := fmt.Sprintf(
 		"%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=UTC",
@@ -34,12 +34,12 @@ func SetupMySQL(config MySQLCfg, logger logger.Interface) (*gorm.DB, error) {
 		Logger: logger,
 	})
 	if err != nil {
-		return nil, fmt.Errorf("[SetupMySQL]gorm.Open err: %w", err)
+		panic(fmt.Sprintf("[SetupMySQL]gorm.Open err: %v", err))
 	}
 
 	sqlDB, err := db.DB()
 	if err != nil {
-		return nil, fmt.Errorf("[SetupMySQL]db.DB err: %w", err)
+		panic(fmt.Sprintf("[SetupMySQL]db.DB err: %v", err))
 	}
 
 	// Set connection pool settings
@@ -47,5 +47,5 @@ func SetupMySQL(config MySQLCfg, logger logger.Interface) (*gorm.DB, error) {
 	sqlDB.SetMaxOpenConns(int(config.MaxOpenConns))
 	sqlDB.SetConnMaxLifetime(config.ConnMaxLifeTime)
 
-	return db, nil
+	return db
 }

@@ -11,17 +11,17 @@ import (
 )
 
 type Config struct {
+	Network       string
 	Host          string
 	Port          int
-	Password      string
-	Network       string
 	WriteDeadline time.Duration
 	ReadDeadline  time.Duration
+	Brokers       []string // for consumer groups only
 }
 
-func NewKafkaConn(config Config, topic string) *kafka.Conn {
+func NewKafkaConn(config Config, topic string, partition int) *kafka.Conn {
 	address := fmt.Sprintf("%s:%d", config.Host, config.Port)
-	conn, err := kafka.DialLeader(context.Background(), config.Network, address, topic, 0)
+	conn, err := kafka.DialLeader(context.Background(), config.Network, address, topic, partition)
 	if err != nil {
 		logger.Fatal("[NewKafkaConn]kafka.DialLeader err: %v", err)
 	}
@@ -39,43 +39,35 @@ func NewKafkaConn(config Config, topic string) *kafka.Conn {
 	return conn
 }
 
-func WriteMessage(c *kafka.Conn, msg []byte) {
-	_, err := c.WriteMessages(
-		kafka.Message{Value: msg},
-	)
+func NewKafkaConsumerGroup(config Config, groupID string, topics []string) *kafka.ConsumerGroup {
+	group, err := kafka.NewConsumerGroup(kafka.ConsumerGroupConfig{
+		ID:      groupID,
+		Brokers: config.Brokers,
+		Topics:  topics,
+	})
 	if err != nil {
-		logger.Fatal("[WriteMessage]c.WriteMessages err: %v", err)
+		logger.Fatal("[NewKafkaConsumerGroup]kafka.NewConsumerGroup err: %v", err)
 	}
+
+	return group
 }
 
-func ReadMessage(c *kafka.Conn, maxBytes int) []byte {
-	msg, err := c.ReadMessage(maxBytes)
-	if err != nil {
-		logger.Fatal("[ReadMessage]c.ReadMessage err: %v", err)
-	}
-
-	return msg.Value
+func NewKafkaReader(config Config, topic string, partition int) *kafka.Reader {
+	r := kafka.NewReader(kafka.ReaderConfig{
+		Brokers:   config.Brokers,
+		Topic:     topic,
+		Partition: partition,
+		MinBytes:  10e3, // 10KB
+		MaxBytes:  10e6, // 10MB
+	})
+	return r
 }
 
-func ReadBatch(c *kafka.Conn, minBytes int, maxBytes int) []string {
-	batchMsg := make([]string, 0)
-	batch := c.ReadBatch(maxBytes, maxBytes)
-
-	b := make([]byte, minBytes)
-	for {
-		n, err := batch.Read(b)
-		if err != nil {
-			break
-		}
-		batchMsg = append(batchMsg, string(b[:n]))
-	}
-
-	err := batch.Close()
-	if err != nil {
-		logger.Fatal("[ReadBatch]batch.Close err: %v", err)
-	}
-
-	return batchMsg
+func NewKafkaWriter(config Config, topic string) *kafka.Writer {
+	return kafka.NewWriter(kafka.WriterConfig{
+		Brokers: config.Brokers,
+		Topic:   topic,
+	})
 }
 
 // TODO

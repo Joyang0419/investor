@@ -17,7 +17,7 @@ require (
 	golang.org/x/oauth2 v0.20.0
 	google.golang.org/grpc v1.63.2
 	protos v0.0.0
-	tools v0.0.0-00010101000000-000000000000
+	tools v0.0.0
 )
 
 require (

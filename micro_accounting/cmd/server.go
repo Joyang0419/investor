@@ -47,6 +47,14 @@ func runServerCmd(_ *cobra.Command, _ []string) {
 		},
 	)
 
+	producer := infra_conn.SetupProducer(
+		infra_conn.KafkaProducerCfg{
+			Brokers: nil,
+			Topic:   "",
+		},
+		false,
+	)
+
 	// Query
 	accountQuery := accounting.NewQuery(mysqlConn)
 	// Command

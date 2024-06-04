@@ -23,6 +23,7 @@ type ICommand interface {
 type Command struct {
 	mysqlDB     *gorm.DB
 	redisClient *redis.Client
+	producer
 }
 
 var (

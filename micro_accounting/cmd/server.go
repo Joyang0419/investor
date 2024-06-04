@@ -11,7 +11,8 @@ import (
 	"micro_accounting/conf"
 	"micro_accounting/service/accounting"
 	"protos/micro_accounting"
-	"tools/infra_conn"
+	"tools/infra/mysql"
+	"tools/infra/redis"
 	"tools/logger"
 )
 
@@ -24,8 +25,8 @@ var serverCmd = &cobra.Command{
 
 func runServerCmd(_ *cobra.Command, _ []string) {
 	// 註冊基礎設施
-	mysqlConn := infra_conn.SetupMySQL(
-		infra_conn.MySQLCfg{
+	mysqlConn := mysql.SetupConn(
+		mysql.Config{
 			Host:            conf.Config.MySQL.Host,
 			Port:            conf.Config.MySQL.Port,
 			Username:        conf.Config.MySQL.Username,
@@ -38,21 +39,13 @@ func runServerCmd(_ *cobra.Command, _ []string) {
 		nil,
 	)
 
-	redisClient := infra_conn.SetupRedis(
-		infra_conn.RedisCfg{
+	redisClient := redis.SetupConn(
+		redis.Config{
 			Host:     conf.Config.Redis.Host,
 			Port:     conf.Config.Redis.Port,
 			Password: conf.Config.Redis.Password,
 			DB:       conf.Config.Redis.DB,
 		},
-	)
-
-	producer := infra_conn.SetupProducer(
-		infra_conn.KafkaProducerCfg{
-			Brokers: nil,
-			Topic:   "",
-		},
-		false,
 	)
 
 	// Query

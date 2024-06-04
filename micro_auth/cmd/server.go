@@ -13,7 +13,7 @@ import (
 	"protos/micro_auth"
 	investor2 "repo/mongodb/investor"
 	"tools/encryption"
-	"tools/infra_conn"
+	"tools/infra/mongo"
 	"tools/logger"
 )
 
@@ -26,8 +26,8 @@ var serverCmd = &cobra.Command{
 
 func runServerCmd(_ *cobra.Command, _ []string) {
 	// 註冊基礎設施
-	mongoDbConn := infra_conn.SetupMongoDB(
-		infra_conn.MongoDBCfg{
+	mongoDbConn := mongo.SetupConn(
+		mongo.Config{
 			Host:            conf.Config.MongoDB.Host,
 			Port:            conf.Config.MongoDB.Port,
 			Username:        conf.Config.MongoDB.Username,

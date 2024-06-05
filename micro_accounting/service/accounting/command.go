@@ -7,11 +7,13 @@ import (
 	"time"
 
 	"github.com/go-redis/redis/v8"
+	"github.com/segmentio/kafka-go"
 	"gorm.io/gorm"
+
+	"tools/redisx"
 
 	"definition/db_schema/mysql"
 	"tools/errorx"
-	"tools/redisx"
 )
 
 type ICommand interface {
@@ -23,7 +25,7 @@ type ICommand interface {
 type Command struct {
 	mysqlDB     *gorm.DB
 	redisClient *redis.Client
-	producer
+	kafkaClient *kafka.Client
 }
 
 var (

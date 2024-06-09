@@ -86,13 +86,14 @@ func (c *Command) Withdraw(ctx context.Context, accountID int64, amount float64)
 	}
 	if err = kafka2.NewKafkaSyncProducer(c.kafkaConn, transaction.Topic, kafka.RequireNone).WriteMessages(
 		ctx,
-		kafka.Message{WriterData: transaction.Message{
-			ID:              transactionID,
-			Type:            withdraw,
-			Amount:          amount,
-			AccountID:       accountID,
-			TargetAccountID: accountID,
-		}},
+		kafka.Message{
+			WriterData: transaction.Data{
+				ID:              transactionID,
+				Type:            withdraw,
+				Amount:          amount,
+				AccountID:       accountID,
+				TargetAccountID: accountID,
+			}},
 	); err != nil {
 		return 0, 0, fmt.Errorf("[Command][Withdraw]kafka2.NewKafkaSyncProducer err: %w", err)
 	}
@@ -136,7 +137,7 @@ func (c *Command) Deposit(ctx context.Context, accountID int64, amount float64) 
 	if err = kafka2.NewKafkaSyncProducer(c.kafkaConn, transaction.Topic, kafka.RequireNone).WriteMessages(
 		ctx,
 		kafka.Message{
-			WriterData: transaction.Message{
+			WriterData: transaction.Data{
 				ID:              transactionID,
 				Type:            deposit,
 				Amount:          amount,
@@ -198,7 +199,7 @@ func (c *Command) Transfer(
 	if err = kafka2.NewKafkaSyncProducer(c.kafkaConn, transaction.Topic, kafka.RequireNone).WriteMessages(
 		ctx,
 		kafka.Message{
-			WriterData: transaction.Message{
+			WriterData: transaction.Data{
 				ID:              transactionID,
 				Type:            withdraw,
 				Amount:          amount,
@@ -213,9 +214,10 @@ func (c *Command) Transfer(
 	return transactionID, updatedBalance, nil
 }
 
-func NewCommand(mysqlDB *gorm.DB, redisClient *redis.Client) ICommand {
+func NewCommand(mysqlDB *gorm.DB, redisClient *redis.Client, kafkaConn *kafka.Conn) ICommand {
 	return &Command{
 		mysqlDB:     mysqlDB,
 		redisClient: redisClient,
+		kafkaConn:   kafkaConn,
 	}
 }

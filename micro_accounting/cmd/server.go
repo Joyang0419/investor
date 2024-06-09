@@ -11,6 +11,7 @@ import (
 	"micro_accounting/conf"
 	"micro_accounting/service/accounting"
 	"protos/micro_accounting"
+	kafka2 "tools/infra/kafka"
 	"tools/infra/mysql"
 	"tools/infra/redis"
 	"tools/logger"
@@ -48,10 +49,15 @@ func runServerCmd(_ *cobra.Command, _ []string) {
 		},
 	)
 
+	kafkaConn := kafka2.NewKafkaConn(kafka2.Config{
+		Host: conf.Config.Kafka.Host,
+		Port: conf.Config.Kafka.Port,
+	})
+
 	// Query
 	accountQuery := accounting.NewQuery(mysqlConn)
 	// Command
-	accountCommand := accounting.NewCommand(mysqlConn, redisClient)
+	accountCommand := accounting.NewCommand(mysqlConn, redisClient, kafkaConn)
 
 	// 註冊gRPC服務
 	grpcServer := grpc.NewServer()

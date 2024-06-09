@@ -2,7 +2,7 @@ package transaction
 
 const Topic = "transaction"
 
-type Message struct {
+type Data struct {
 	ID              int64   // 交易ID
 	Type            string  // 交易類型
 	Amount          float64 // 交易金額

@@ -15,16 +15,12 @@ import (
 const defaultTimeout = 3 * time.Second
 
 type Config struct {
-	Network       string
-	Host          string
-	Port          int
-	WriteDeadline time.Duration
-	ReadDeadline  time.Duration
-	Brokers       []string // for consumer groups only
+	Host string
+	Port int
 }
 
 func NewKafkaConn(config Config) *kafka.Conn {
-	kafkaConn, err := kafka.Dial(config.Network, fmt.Sprintf("%s:%d", config.Host, config.Port))
+	kafkaConn, err := kafka.Dial("tcp", fmt.Sprintf("%s:%d", config.Host, config.Port))
 	if err != nil {
 		logger.Fatal("[NewKafkaConn]kafka.Dial err: %v", err)
 	}
@@ -64,27 +60,27 @@ func NewKafkaSyncProducer(conn *kafka.Conn, topic string, requiredAck kafka.Requ
 	}
 }
 
-func NewKafkaConsumerGroup(config Config, groupID string, topics []string) *kafka.ConsumerGroup {
-	group, err := kafka.NewConsumerGroup(kafka.ConsumerGroupConfig{
-		ID:      groupID,
-		Brokers: config.Brokers,
-		Topics:  topics,
-	})
-	if err != nil {
-		logger.Fatal("[NewKafkaConsumerGroup]kafka.NewConsumerGroup err: %v", err)
-	}
-
-	return group
-}
-
-// TODO ERIC 要用的，讓他自己調整, 我先把Producer搞好一版
-func NewKafkaReader(config Config, topic string, partition int) *kafka.Reader {
-	r := kafka.NewReader(kafka.ReaderConfig{
-		Brokers:   config.Brokers,
-		Topic:     topic,
-		Partition: partition,
-		MinBytes:  10e3, // 10KB
-		MaxBytes:  10e6, // 10MB
-	})
-	return r
-}
+//func NewKafkaConsumerGroup(config Config, groupID string, topics []string) *kafka.ConsumerGroup {
+//	group, err := kafka.NewConsumerGroup(kafka.ConsumerGroupConfig{
+//		ID:      groupID,
+//		Brokers: config.Brokers,
+//		Topics:  topics,
+//	})
+//	if err != nil {
+//		logger.Fatal("[NewKafkaConsumerGroup]kafka.NewConsumerGroup err: %v", err)
+//	}
+//
+//	return group
+//}
+//
+//// TODO ERIC 要用的，讓他自己調整, 我先把Producer搞好一版
+//func NewKafkaReader(config Config, topic string, partition int) *kafka.Reader {
+//	r := kafka.NewReader(kafka.ReaderConfig{
+//		Brokers:   config.Brokers,
+//		Topic:     topic,
+//		Partition: partition,
+//		MinBytes:  10e3, // 10KB
+//		MaxBytes:  10e6, // 10MB
+//	})
+//	return r
+//}

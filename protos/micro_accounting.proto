@@ -9,48 +9,43 @@ service AccountingService {
 }
 
 message WithdrawRequest {
-  uint64 AccountID = 1;
+  int64 AccountID = 1;
   double Amount = 2;
 }
 
 message WithdrawResponse {
-  uint64 ID = 1;                       // 交易ID
+  int64 ID = 1;                       // 交易ID
   string Type = 2;                     // 交易類型
   double Amount = 3;                   // 交易金額
-  uint64 AccountID = 4;                // 交易帳戶ID
-  uint64 TargetAccountID = 5;          // 目標帳戶ID
-  int64 CreatedAt = 6; // 交易時間
-  double CurrentBalance = 7; // 當前餘額
+  int64 AccountID = 4;                // 交易帳戶ID
+  double CurrentBalance = 6; // 當前餘額
 }
 
 message DepositRequest {
-  uint64 AccountID = 1;
+  int64 AccountID = 1;
   double Amount = 2;
 }
 
 message DepositResponse {
-  uint64 ID = 1;                       // 交易ID
+  int64 ID = 1;                       // 交易ID
   string Type = 2;                     // 交易類型
   double Amount = 3;                   // 交易金額
-  uint64 AccountID = 4;                // 交易帳戶ID
-  uint64 TargetAccountID = 5;          // 目標帳戶ID
-  int64 CreatedAt = 6; // 交易時間
+  int64 AccountID = 4;                // 交易帳戶ID
   double CurrentBalance = 7; // 當前餘額
 }
 
 message TransferRequest {
-  uint64 AccountID = 1;
-  uint64 TargetAccountID = 2;
+  int64 AccountID = 1;
+  int64 TargetAccountID = 2;
   double Amount = 3;
 }
 
 message TransferResponse {
-  uint64 ID = 1;                       // 交易ID
+  int64 ID = 1;                       // 交易ID
   string Type = 2;                     // 交易類型
   double Amount = 3;                   // 交易金額
-  uint64 AccountID = 4;                // 交易帳戶ID
-  uint64 TargetAccountID = 5;          // 目標帳戶ID
-  int64 CreatedAt = 6; // 交易時間
+  int64 AccountID = 4;                // 交易帳戶ID
+  int64 TargetAccountID = 5;          // 目標帳戶ID
   double CurrentBalance = 7; // 當前餘額
 }
 

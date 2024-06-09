@@ -24,4 +24,8 @@ var Config struct {
 		Password string
 		DB       int
 	}
+	Kafka struct {
+		Host string
+		Port int
+	}
 }

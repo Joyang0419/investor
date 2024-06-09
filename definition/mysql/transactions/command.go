@@ -30,10 +30,10 @@ func Create(
 		TargetAccountID: targetAccountID,
 	}
 
-	if slicex.IsElementInSlice(validTransactionTypes, readyToInsert.Type) {
+	if slicex.IsElementNotInSlice(validTransactionTypes, readyToInsert.Type) {
 		return 0, fmt.Errorf("[transactions][Create]err: %w", errWrongTransactionType)
 	}
-	if db.WithContext(ctx).Create(&readyToInsert).Error != nil {
+	if err = db.WithContext(ctx).Create(&readyToInsert).Error; err != nil {
 		return 0, fmt.Errorf("[transactions][Create]Create err: %w", err)
 	}
 

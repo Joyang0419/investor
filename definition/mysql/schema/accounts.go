@@ -12,7 +12,6 @@ type Account struct {
 	Balance     float64   `gorm:"column:balance"`       // 餘額
 	LastLoginAt time.Time `gorm:"column:last_login_at"` // 最後登入時間
 	CreatedAt   time.Time `gorm:"column:created_at"`    // 建立時間
-	UpdatedAt   time.Time `gorm:"column:updated_at"`    // 更新時間
 }
 
 func (Account) TableName() string {

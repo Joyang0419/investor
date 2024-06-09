@@ -49,7 +49,7 @@ func (c *Command) Withdraw(ctx context.Context, accountID int64, amount float64)
 		return 0, 0, fmt.Errorf("[Command][Withdraw]redisTools.SetLock err: %w, accountID: %d", err, accountID)
 	}
 	defer func() {
-		if errReleaseLock := redisTools.ReleaseLock(ctx, c.redisClient, transactionLockKey(accountID)); errorx.IsErrorExist(err) {
+		if errReleaseLock := redisTools.ReleaseLock(ctx, c.redisClient, transactionLockKey(accountID)); errorx.IsErrorExist(errReleaseLock) {
 			err = fmt.Errorf("[Command][Withdraw]SetAccountingLock]redisTools.ReleaseLock err: %w, accountID: %d, oriErr: %v", errReleaseLock, accountID, err)
 		}
 	}()
@@ -73,7 +73,7 @@ func (c *Command) Withdraw(ctx context.Context, accountID int64, amount float64)
 		if err = accounts.UpdateBalance(ctx, tx, accountID, negativeAmount); errorx.IsErrorExist(err) {
 			return fmt.Errorf("[Command][Withdraw]accounts.UpdateBalance err: %w, accountID: %d", err, accountID)
 		}
-		if err = balance_change_log.Create(ctx, tx, accountID, transactionID, amount, amount); err != nil {
+		if err = balance_change_log.Create(ctx, tx, accountID, transactionID, currentBalance, currentBalance-amount); err != nil {
 			return fmt.Errorf("[Command][Withdraw]balance_change_log.Create err: %w, accountID: %d", err, accountID)
 		}
 
@@ -106,7 +106,7 @@ func (c *Command) Deposit(ctx context.Context, accountID int64, amount float64) 
 		return 0, 0, fmt.Errorf("[Command][Deposit]redisTools.SetLock err: %w, accountID: %d", err, accountID)
 	}
 	defer func() {
-		if errReleaseLock := redisTools.ReleaseLock(ctx, c.redisClient, transactionLockKey(accountID)); errorx.IsErrorExist(err) {
+		if errReleaseLock := redisTools.ReleaseLock(ctx, c.redisClient, transactionLockKey(accountID)); errorx.IsErrorExist(errReleaseLock) {
 			err = fmt.Errorf("[Command][Deposit]redisTools.ReleaseLock err: %w, accountID: %d, oriErr: %v", errReleaseLock, accountID, err)
 		}
 	}()
@@ -116,16 +116,21 @@ func (c *Command) Deposit(ctx context.Context, accountID int64, amount float64) 
 			return fmt.Errorf("[Command][Deposit]transactions.Create err: %w, accountID: %d, amount: %f", err, accountID, amount)
 		}
 
+		beforeBalance, errBeforeBalance := accounts.GetBalance(ctx, tx, accountID)
+		if errorx.IsErrorExist(errBeforeBalance) {
+			return fmt.Errorf("[Command][Deposit]accounts.GetBalance err: %w, accountID: %d", errBeforeBalance, accountID)
+		}
+
 		if err = accounts.UpdateBalance(ctx, tx, accountID, amount); errorx.IsErrorExist(err) {
 			return fmt.Errorf("[Command][Deposit]accounts.UpdateBalance err: %w, accountID: %d", err, accountID)
 		}
 
-		if err = balance_change_log.Create(ctx, tx, accountID, transactionID, amount, amount); err != nil {
-			return fmt.Errorf("[Command][Deposit]balance_change_log.Create err: %w, accountID: %d", err, accountID)
-		}
-
 		if updatedBalance, err = accounts.GetBalance(ctx, tx, accountID); errorx.IsErrorExist(err) {
 			return fmt.Errorf("[Command][Deposit]accounts.GetBalance err: %w, accountID: %d", err, accountID)
+		}
+
+		if err = balance_change_log.Create(ctx, tx, accountID, transactionID, beforeBalance, updatedBalance); err != nil {
+			return fmt.Errorf("[Command][Deposit]balance_change_log.Create err: %w, accountID: %d", err, accountID)
 		}
 
 		return nil
@@ -161,7 +166,7 @@ func (c *Command) Transfer(
 		return 0, 0, fmt.Errorf("[Command][Transfer]redisTools.SetLock err: %w, accountID: %d", err, fromAccountID)
 	}
 	defer func() {
-		if errReleaseLock := redisTools.ReleaseLock(ctx, c.redisClient, transactionLockKey(fromAccountID)); errorx.IsErrorExist(err) {
+		if errReleaseLock := redisTools.ReleaseLock(ctx, c.redisClient, transactionLockKey(fromAccountID)); errorx.IsErrorExist(errReleaseLock) {
 			err = fmt.Errorf("[Command][Transfer]redisTools.ReleaseLock err: %w, accountID: %d, oriErr: %v", errReleaseLock, fromAccountID, err)
 		}
 	}()

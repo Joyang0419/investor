@@ -22,7 +22,7 @@ func Create(
 		AfterBalance:  afterBalance,
 	}
 
-	if db.WithContext(ctx).Create(&readyToInsert).Error != nil {
+	if err = db.WithContext(ctx).Create(&readyToInsert).Error; err != nil {
 		return fmt.Errorf("[transactions][Create]Create err: %w", err)
 	}
 

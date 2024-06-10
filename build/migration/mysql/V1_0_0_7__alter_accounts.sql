@@ -1,0 +1,1 @@
+ALTER TABLE accounts CHANGE account_id id INT AUTO_INCREMENT COMMENT '帐户ID';

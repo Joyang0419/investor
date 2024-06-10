@@ -12,6 +12,10 @@ func IsNotZero[typeNumber TypeNumber](number typeNumber) bool {
 	return number != typeNumber(0)
 }
 
+func IsZero[typeNumber TypeNumber](number typeNumber) bool {
+	return number == typeNumber(0)
+}
+
 func IsGTE[typeNumber TypeNumber](number typeNumber, compareNumber typeNumber) bool {
 	return number >= compareNumber
 }

@@ -1,0 +1,1 @@
+ALTER TABLE balance_change_log CHANGE transaction_id transaction_id INT NOT NULL COMMENT '交易訂單 ID';

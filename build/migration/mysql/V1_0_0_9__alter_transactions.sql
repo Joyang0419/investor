@@ -1,0 +1,1 @@
+ALTER TABLE transactions CHANGE transaction_id id INT AUTO_INCREMENT COMMENT '交易ID';

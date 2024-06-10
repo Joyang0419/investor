@@ -15,7 +15,6 @@ import (
 	"definition/mysql/balance_change_log"
 	"definition/mysql/transactions"
 	"tools/errorx"
-	kafka2 "tools/infra/kafka"
 	redisTools "tools/infra/redis"
 	"tools/numberx"
 )
@@ -73,7 +72,9 @@ func (c *Command) Withdraw(ctx context.Context, accountID int64, amount float64)
 		if err = accounts.UpdateBalance(ctx, tx, accountID, negativeAmount); errorx.IsErrorExist(err) {
 			return fmt.Errorf("[Command][Withdraw]accounts.UpdateBalance err: %w, accountID: %d", err, accountID)
 		}
-		if err = balance_change_log.Create(ctx, tx, accountID, transactionID, currentBalance, currentBalance-amount); err != nil {
+
+		afterBalance := currentBalance - amount
+		if err = balance_change_log.Create(ctx, tx, accountID, transactionID, currentBalance, afterBalance); err != nil {
 			return fmt.Errorf("[Command][Withdraw]balance_change_log.Create err: %w, accountID: %d", err, accountID)
 		}
 
@@ -84,16 +85,19 @@ func (c *Command) Withdraw(ctx context.Context, accountID int64, amount float64)
 	if err = c.mysqlDB.Transaction(atomicOperation); err != nil {
 		return 0, 0, fmt.Errorf("[Command][Withdraw]mysqlDB.Transaction err: %w, accountID: %d, amount: %f", err, accountID, amount)
 	}
-	if err = kafka2.NewKafkaSyncProducer(c.kafkaConn, transaction.Topic, kafka.RequireNone).WriteMessages(
+
+	if err = transaction.WriteMessages(
 		ctx,
-		kafka.Message{
-			WriterData: transaction.Data{
+		c.kafkaConn,
+		[]transaction.Data{
+			{
 				ID:              transactionID,
 				Type:            withdraw,
 				Amount:          amount,
 				AccountID:       accountID,
 				TargetAccountID: accountID,
-			}},
+			},
+		},
 	); err != nil {
 		return 0, 0, fmt.Errorf("[Command][Withdraw]kafka2.NewKafkaSyncProducer err: %w", err)
 	}
@@ -112,13 +116,17 @@ func (c *Command) Deposit(ctx context.Context, accountID int64, amount float64) 
 	}()
 
 	atomicOperation := func(tx *gorm.DB) error {
-		if transactionID, err = transactions.Create(ctx, tx, withdraw, amount, accountID, accountID); errorx.IsErrorExist(err) {
-			return fmt.Errorf("[Command][Deposit]transactions.Create err: %w, accountID: %d, amount: %f", err, accountID, amount)
+		if numberx.IsZero(amount) {
+			return errors.New("[Command][Deposit]amount is zero")
 		}
 
 		beforeBalance, errBeforeBalance := accounts.GetBalance(ctx, tx, accountID)
 		if errorx.IsErrorExist(errBeforeBalance) {
 			return fmt.Errorf("[Command][Deposit]accounts.GetBalance err: %w, accountID: %d", errBeforeBalance, accountID)
+		}
+
+		if transactionID, err = transactions.Create(ctx, tx, withdraw, amount, accountID, accountID); errorx.IsErrorExist(err) {
+			return fmt.Errorf("[Command][Deposit]transactions.Create err: %w, accountID: %d, amount: %f", err, accountID, amount)
 		}
 
 		if err = accounts.UpdateBalance(ctx, tx, accountID, amount); errorx.IsErrorExist(err) {
@@ -139,10 +147,11 @@ func (c *Command) Deposit(ctx context.Context, accountID int64, amount float64) 
 	if err = c.mysqlDB.Transaction(atomicOperation); err != nil {
 		return 0, 0, fmt.Errorf("[Command][Deposit]Transaction err: %w, accountID: %d, amount: %f", err, accountID, amount)
 	}
-	if err = kafka2.NewKafkaSyncProducer(c.kafkaConn, transaction.Topic, kafka.RequireNone).WriteMessages(
+	if err = transaction.WriteMessages(
 		ctx,
-		kafka.Message{
-			WriterData: transaction.Data{
+		c.kafkaConn,
+		[]transaction.Data{
+			{
 				ID:              transactionID,
 				Type:            deposit,
 				Amount:          amount,
@@ -190,7 +199,9 @@ func (c *Command) Transfer(
 		if err = accounts.UpdateBalance(ctx, tx, fromAccountID, negativeAmount); errorx.IsErrorExist(err) {
 			return fmt.Errorf("[Command][Transfer]accounts.UpdateBalance err: %w, accountID: %d", err, fromAccountID)
 		}
-		if err = balance_change_log.Create(ctx, tx, fromAccountID, transactionID, amount, amount); err != nil {
+
+		afterBalance := currentBalance - amount
+		if err = balance_change_log.Create(ctx, tx, fromAccountID, transactionID, currentBalance, afterBalance); err != nil {
 			return fmt.Errorf("[Command][Transfer]balance_change_log.Create err: %w, accountID: %d", err, fromAccountID)
 		}
 
@@ -201,10 +212,12 @@ func (c *Command) Transfer(
 	if err = c.mysqlDB.Transaction(atomicOperation); err != nil {
 		return 0, 0, fmt.Errorf("[Command][Transfer]mysqlDB.Transaction err: %w, fromAccountID: %d, amount: %f", err, fromAccountID, amount)
 	}
-	if err = kafka2.NewKafkaSyncProducer(c.kafkaConn, transaction.Topic, kafka.RequireNone).WriteMessages(
+
+	if err = transaction.WriteMessages(
 		ctx,
-		kafka.Message{
-			WriterData: transaction.Data{
+		c.kafkaConn,
+		[]transaction.Data{
+			{
 				ID:              transactionID,
 				Type:            withdraw,
 				Amount:          amount,

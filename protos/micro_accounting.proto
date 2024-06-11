@@ -14,7 +14,7 @@ message WithdrawRequest {
 }
 
 message WithdrawResponse {
-  int64 ID = 1;                       // 交易ID
+  string ID = 1;                       // 交易ID
   string Type = 2;                     // 交易類型
   double Amount = 3;                   // 交易金額
   int64 AccountID = 4;                // 交易帳戶ID
@@ -27,7 +27,7 @@ message DepositRequest {
 }
 
 message DepositResponse {
-  int64 ID = 1;                       // 交易ID
+  string ID = 1;                       // 交易ID
   string Type = 2;                     // 交易類型
   double Amount = 3;                   // 交易金額
   int64 AccountID = 4;                // 交易帳戶ID
@@ -41,7 +41,7 @@ message TransferRequest {
 }
 
 message TransferResponse {
-  int64 ID = 1;                       // 交易ID
+  string ID = 1;                       // 交易ID
   string Type = 2;                     // 交易類型
   double Amount = 3;                   // 交易金額
   int64 AccountID = 4;                // 交易帳戶ID

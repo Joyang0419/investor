@@ -2,14 +2,11 @@ package kafka
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/segmentio/kafka-go"
 
 	"tools/logger"
 )
-
-const defaultTimeout = 3 * time.Second
 
 type Config struct {
 	Host string

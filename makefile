@@ -13,6 +13,22 @@ GenProtos:
 GenGraphQL:
 	cd apiserver/graphql && go run github.com/99designs/gqlgen generate
 
+# 基礎環境設定
+# 啟動dev/build檔的dev docker compose yaml
+UpDevInfra:
+	cd build/dev && docker-compose up -d
+
+# 關閉dev/build檔的dev docker compose yaml
+DownDevInfra:
+	cd build/dev && docker-compose down -v
+
+MigrateUpMySQL:
+	cd build/dev && docker-compose up -d flyway
+
+MigrateUpMongoDB:
+	cd build/dev && docker-compose up -d migrate-mongo
+
+# 啟動服務
 # 啟動ApiServer服務
 RunApiServer:
 	cd apiserver && cp conf/env.yaml.example conf/env.yaml && go mod tidy && go run main.go server
@@ -27,29 +43,11 @@ RunMicroAccounting:
 
 # 啟動micro_stock_price
 RunMicroStockPrice:
-	cd micro_stock_price && go mod tidy && go run main.go server
+	cd micro_stock_price && cp conf/env.yaml.example conf/env.yaml && go mod tidy && go run main.go server
 
 # 啟動Scheduler服務
 RunScheduler:
-	cd scheduler && go mod tidy && go run main.go scheduler
+	cd scheduler && cp conf/env.yaml.example conf/env.yaml && go mod tidy && go run main.go server
 
 RunConsumer:
-	cd consumer && go mod tidy && go run main.go server
-
-# 啟動dev/build檔的dev docker compose yaml
-UpDevInfra:
-	cd build/dev && docker-compose up -d
-
-# 關閉dev/build檔的dev docker compose yaml
-DownDevInfra:
-	cd build/dev && docker-compose down -v
-
-MigrateUpMySQL:
-	cd build/dev && docker-compose up -d flyway
-
-# 啟動micro_stock_price dailyPrice 腳本, 記得要先建置MYSQL資料庫並執行Flyway, 確認table: daily_price存在
-RunMicroStockPriceDailyPrice:
-	cd micro_stock_price && go mod tidy && go run main.go dailyPrice
-
-MigrateUpMongoDB:
-	cd build/dev && docker-compose up -d migrate-mongo
+	cd consumer && cp conf/env.yaml.example conf/env.yaml && go mod tidy && go run main.go server

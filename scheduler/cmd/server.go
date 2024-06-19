@@ -12,20 +12,20 @@ import (
 	"tools/logger"
 )
 
-var schedulerCmd = &cobra.Command{
-	Use:   "scheduler",
+var serverCmd = &cobra.Command{
+	Use:   "server",
 	Short: "",
 	Long:  "",
-	Run:   runSchedulerCmd,
+	Run:   runServerCmd,
 }
 
 func init() {
-	rootCmd.AddCommand(schedulerCmd)
+	rootCmd.AddCommand(serverCmd)
 }
 
 // 每5秒执行一次: */5 * * * * *
 
-func runSchedulerCmd(_ *cobra.Command, _ []string) {
+func runServerCmd(_ *cobra.Command, _ []string) {
 	logger.Info("scheduler start")
 	cronManager := cronx.NewCronManager()
 

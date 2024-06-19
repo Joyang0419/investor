@@ -1,6 +1,7 @@
 package kafka
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/segmentio/kafka-go"
@@ -55,4 +56,17 @@ func NewKafkaConsumer(conn *kafka.Conn, topic string, opts ...OptionConsumer) *k
 	}
 
 	return kafka.NewReader(config)
+}
+
+func ReadMsgs(ctx context.Context, r *kafka.Reader, handler func(kafka.Message) error) error {
+	for {
+		m, err := r.ReadMessage(ctx)
+		if errorx.IsErrorExist(err) {
+			return fmt.Errorf("[kafka][ReadMsgs]ReadMessage err: %w", err)
+		}
+
+		if err = handler(m); errorx.IsErrorExist(err) {
+			return fmt.Errorf("[kafka][ReadMsgs]handler err: %w", err)
+		}
+	}
 }

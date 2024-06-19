@@ -33,6 +33,9 @@ RunMicroStockPrice:
 RunScheduler:
 	cd scheduler && go mod tidy && go run main.go scheduler
 
+RunConsumer:
+	cd consumer && go mod tidy && go run main.go server
+
 # 啟動dev/build檔的dev docker compose yaml
 UpDevInfra:
 	cd build/dev && docker-compose up -d

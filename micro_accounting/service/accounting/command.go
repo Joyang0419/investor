@@ -15,6 +15,7 @@ import (
 	"definition/mysql/balance_change_log"
 	"definition/mysql/transactions"
 	"tools/errorx"
+	kafka2 "tools/infra/kafka"
 	redisTools "tools/infra/redis"
 	"tools/numberx"
 )
@@ -26,9 +27,9 @@ type ICommand interface {
 }
 
 type Command struct {
-	mysqlDB     *gorm.DB
-	redisClient *redis.Client
-	kafkaConn   *kafka.Conn
+	mysqlDB               *gorm.DB
+	redisClient           *redis.Client
+	producerOfTransaction *kafka.Writer
 }
 
 var (
@@ -86,20 +87,22 @@ func (c *Command) Withdraw(ctx context.Context, accountID int64, amount float64)
 		return 0, 0, fmt.Errorf("[Command][Withdraw]mysqlDB.Transaction err: %w, accountID: %d, amount: %f", err, accountID, amount)
 	}
 
-	if err = transaction.WriteMessages(
-		ctx,
-		c.kafkaConn,
-		[]transaction.Data{
-			{
-				ID:              transactionID,
-				Type:            withdraw,
-				Amount:          amount,
-				AccountID:       accountID,
-				TargetAccountID: accountID,
-			},
+	msg, err := kafka2.JsonFormatToKafkaMsg(
+		transaction.Data{
+			ID:              transactionID,
+			Type:            withdraw,
+			Amount:          amount,
+			AccountID:       accountID,
+			TargetAccountID: accountID,
 		},
-	); err != nil {
-		return 0, 0, fmt.Errorf("[Command][Withdraw]kafka2.NewKafkaSyncProducer err: %w", err)
+	)
+	if err != nil {
+		return 0, 0, fmt.Errorf("[Command][Withdraw]kafka2.JsonFormatToKafkaMsg err: %w", err)
+
+	}
+
+	if err = c.producerOfTransaction.WriteMessages(ctx, msg); err != nil {
+		return 0, 0, fmt.Errorf("[Command][Withdraw]producerOfTransaction.WriteMessages err: %w", err)
 	}
 
 	return transactionID, updatedBalance, nil
@@ -147,20 +150,23 @@ func (c *Command) Deposit(ctx context.Context, accountID int64, amount float64) 
 	if err = c.mysqlDB.Transaction(atomicOperation); err != nil {
 		return 0, 0, fmt.Errorf("[Command][Deposit]Transaction err: %w, accountID: %d, amount: %f", err, accountID, amount)
 	}
-	if err = transaction.WriteMessages(
-		ctx,
-		c.kafkaConn,
-		[]transaction.Data{
-			{
-				ID:              transactionID,
-				Type:            deposit,
-				Amount:          amount,
-				AccountID:       accountID,
-				TargetAccountID: accountID,
-			},
+
+	msg, err := kafka2.JsonFormatToKafkaMsg(
+		transaction.Data{
+			ID:              transactionID,
+			Type:            deposit,
+			Amount:          amount,
+			AccountID:       accountID,
+			TargetAccountID: accountID,
 		},
-	); err != nil {
-		return 0, 0, fmt.Errorf("[Command][Deposit]kafka2.NewKafkaSyncProducer err: %w", err)
+	)
+	if err != nil {
+		return 0, 0, fmt.Errorf("[Command][Deposit]kafka2.JsonFormatToKafkaMsg err: %w", err)
+
+	}
+
+	if err = c.producerOfTransaction.WriteMessages(ctx, msg); err != nil {
+		return 0, 0, fmt.Errorf("[Command][Deposit]producerOfTransaction.WriteMessages err: %w", err)
 	}
 
 	return transactionID, updatedBalance, nil
@@ -213,29 +219,32 @@ func (c *Command) Transfer(
 		return 0, 0, fmt.Errorf("[Command][Transfer]mysqlDB.Transaction err: %w, fromAccountID: %d, amount: %f", err, fromAccountID, amount)
 	}
 
-	if err = transaction.WriteMessages(
-		ctx,
-		c.kafkaConn,
-		[]transaction.Data{
-			{
-				ID:              transactionID,
-				Type:            withdraw,
-				Amount:          amount,
-				AccountID:       fromAccountID,
-				TargetAccountID: toAccountID,
-			},
+	msg, err := kafka2.JsonFormatToKafkaMsg(
+		transaction.Data{
+			ID:              transactionID,
+			Type:            withdraw,
+			Amount:          amount,
+			AccountID:       fromAccountID,
+			TargetAccountID: toAccountID,
 		},
-	); err != nil {
-		return 0, 0, fmt.Errorf("[Command][Transfer]kafka2.NewKafkaSyncProducer err: %w", err)
+	)
+	if err != nil {
+		return 0, 0, fmt.Errorf("[Command][Transfer]kafka2.JsonFormatToKafkaMsg err: %w", err)
+
+	}
+
+	if err = c.producerOfTransaction.WriteMessages(ctx, msg); err != nil {
+		return 0, 0, fmt.Errorf("[Command][Transfer]producerOfTransaction.WriteMessages err: %w", err)
 	}
 
 	return transactionID, updatedBalance, nil
 }
 
 func NewCommand(mysqlDB *gorm.DB, redisClient *redis.Client, kafkaConn *kafka.Conn) ICommand {
+	producerOfTransaction := kafka2.NewKafkaSyncProducer(kafkaConn, transaction.Topic, kafka.RequireAll)
 	return &Command{
-		mysqlDB:     mysqlDB,
-		redisClient: redisClient,
-		kafkaConn:   kafkaConn,
+		mysqlDB:               mysqlDB,
+		redisClient:           redisClient,
+		producerOfTransaction: producerOfTransaction,
 	}
 }

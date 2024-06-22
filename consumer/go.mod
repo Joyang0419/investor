@@ -3,6 +3,9 @@ module consumer
 go 1.22.2
 
 require (
+	definition v0.0.0
+	github.com/panjf2000/ants/v2 v2.10.0
+	github.com/segmentio/kafka-go v0.4.47
 	github.com/spf13/cobra v1.8.1
 	tools v0.0.0
 )
@@ -59,7 +62,6 @@ require (
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/sagikazarmark/locafero v0.4.0 // indirect
 	github.com/sagikazarmark/slog-shim v0.1.0 // indirect
-	github.com/segmentio/kafka-go v0.4.47 // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
 	github.com/sourcegraph/conc v0.3.0 // indirect
 	github.com/spf13/afero v1.11.0 // indirect

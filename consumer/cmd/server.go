@@ -1,9 +1,12 @@
 package cmd
 
 import (
+	"definition/kafka/transaction"
+
 	"github.com/spf13/cobra"
 
 	"consumer/conf"
+	"consumer/service"
 	kafka2 "tools/infra/kafka"
 	"tools/infra/mysql"
 	"tools/infra/redis"
@@ -16,7 +19,7 @@ var serverCmd = &cobra.Command{
 	Run:   runServerCmd,
 }
 
-func runServerCmd(_ *cobra.Command, _ []string) {
+func runServerCmd(cmd *cobra.Command, _ []string) {
 	// 註冊基礎設施
 	mysqlConn := mysql.SetupConn(
 		mysql.Config{
@@ -46,5 +49,17 @@ func runServerCmd(_ *cobra.Command, _ []string) {
 		Port: conf.Config.Kafka.Port,
 	})
 
-	_, _, _ = mysqlConn, redisClient, kafkaConn
+	_, _ = mysqlConn, redisClient
+
+	// 啟動連線池
+	p := service.NewTaskPool(
+		3,
+		service.NewTask(
+			cmd.Context(),
+			kafka2.NewKafkaConsumer(kafkaConn, transaction.Topic, kafka2.WithGroupID("")),
+			transaction.Handler(mysqlConn),
+		),
+	)
+	defer p.Release()
+	p.Start()
 }

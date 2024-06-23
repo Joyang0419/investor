@@ -62,7 +62,7 @@ services:
       - ./migrate-mongo/migrate-mongo-config.js:/app/migrate-mongo-config.js  # 配置文件
     depends_on:
       - mongodb
-    command: ["migrate-mongo", "up"]
+    command: [ "migrate-mongo", "up" ]
 
   redis:
     image: redis:7.2.5-alpine
@@ -87,13 +87,19 @@ services:
     image: bitnami/kafka:latest
     restart: always
     ports:
-        - "9092:9092"
+      - "9092:9092"
     environment:
-        - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
-        - ALLOW_PLAINTEXT_LISTENER=yes
-        - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092
-        - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092
-        - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true
-        - KAFKA_CFG_LOG_RETENTION_HOURS=6
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
+      - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092
+      - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true
+      - KAFKA_CFG_LOG_RETENTION_HOURS=6
     depends_on:
       - zookeeper
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro

@@ -20,7 +20,7 @@ import (
 )
 
 var serverCmd = &cobra.Command{
-	Use:   "service",
+	Use:   "server",
 	Short: "",
 	Long:  "",
 	Run:   runServerCmd,

@@ -97,9 +97,17 @@ services:
       - KAFKA_CFG_LOG_RETENTION_HOURS=6
     depends_on:
       - zookeeper
+
   nginx:
     image: nginx:latest
+    container_name: nginx
     ports:
       - "80:80"
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+
+  apiserver:
+    container_name: apiserver
+    build:
+      context: ../../ # 目前定位在: investor; 方便在dockerfile copy 檔案用
+      dockerfile: ./build/dev/apiserver/Dockerfile

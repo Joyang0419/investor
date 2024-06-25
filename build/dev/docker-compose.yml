@@ -111,3 +111,5 @@ services:
     build:
       context: ../../ # 目前定位在: investor; 方便在dockerfile copy 檔案用
       dockerfile: ./build/dev/apiserver/Dockerfile
+    expose:
+      - "8080"
